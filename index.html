@@ -141,7 +141,7 @@
       box-shadow: 0 2px 0 #94a3b8;
       color: #0f172a;
       transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
-      touch-action: manipulation;
+      touch-action: pan-y;
     }
     .quiz-option-pill:not(:disabled):hover {
       border-color: #0284c7;
@@ -433,102 +433,102 @@
       <!-- ================================================================= -->
       <!-- 2B. IN-RACE TOP HUD & TRACK PROGRESS BAR (MATCHING TOP-RIGHT ART) -->
       <!-- ================================================================= -->
-      <div id="race-hud-overlay" class="hidden absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-2 sm:p-3">
+      <div id="race-hud-overlay" class="hidden absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-1.5 sm:p-3">
         <!-- Top Telemetry Row -->
-        <div class="flex items-start justify-between gap-2 pl-12 sm:pl-14">
+        <div class="flex items-start justify-between gap-1 sm:gap-2 pl-10 sm:pl-14">
           <!-- Left Red P1 Badge -->
-          <div class="flex items-center gap-2 bg-gradient-to-r from-red-700 via-rose-600 to-rose-800 border-2 border-rose-300 rounded-2xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-xl">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white text-rose-700 font-racing font-black text-sm sm:text-lg flex items-center justify-center shadow">
+          <div class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-r from-red-700 via-rose-600 to-rose-800 border border-rose-300 sm:border-2 rounded-xl sm:rounded-2xl px-1.5 py-1 sm:px-3.5 sm:py-2 shadow-xl">
+            <div class="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white text-rose-700 font-racing font-black text-xs sm:text-lg flex items-center justify-center shadow">
               P1
             </div>
             <div>
-              <div class="flex items-center gap-1.5">
-                <span id="hud-p1-name" class="text-xs sm:text-sm font-extrabold text-white truncate max-w-[85px] sm:max-w-[130px]">Pemain 1</span>
-                <span id="hud-p1-pos" class="px-1.5 py-0.5 rounded bg-black/35 text-[9px] font-racing font-bold text-amber-300">POS 1</span>
+              <div class="flex items-center gap-1 sm:gap-1.5">
+                <span id="hud-p1-name" class="text-[10px] sm:text-sm font-extrabold text-white truncate max-w-[58px] sm:max-w-[130px]">Pemain 1</span>
+                <span id="hud-p1-pos" class="px-1 py-0.5 rounded bg-black/35 text-[8px] sm:text-[9px] font-racing font-bold text-amber-300">POS 1</span>
               </div>
-              <div class="flex items-center gap-2 mt-0.5">
-                <div class="w-14 sm:w-20 h-2 bg-black/40 rounded-full overflow-hidden">
+              <div class="flex items-center gap-1.5 sm:gap-2 mt-0.5">
+                <div class="w-10 sm:w-20 h-1.5 sm:h-2 bg-black/40 rounded-full overflow-hidden">
                   <div id="hud-p1-mini-bar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%;"></div>
                 </div>
-                <span class="text-[10px] sm:text-xs font-bold text-rose-100">Langkah: <strong id="hud-p1-steps" class="text-white">0</strong></span>
+                <span class="text-[9px] sm:text-xs font-bold text-rose-100">L:<strong id="hud-p1-steps" class="text-white">0</strong></span>
               </div>
             </div>
           </div>
 
           <!-- Center Question & Clock Capsule -->
-          <div class="flex flex-col items-center bg-slate-900/90 border-2 border-sky-400/70 rounded-2xl px-3.5 py-1 sm:px-6 sm:py-1.5 shadow-xl">
-            <div class="font-racing text-xs sm:text-base font-black text-white tracking-wide">
-              SOAL <span id="hud-q-current" class="text-amber-300">1</span> dari <span id="hud-q-total">20</span>
+          <div class="flex flex-col items-center bg-slate-900/90 border border-sky-400/70 sm:border-2 rounded-xl sm:rounded-2xl px-2.5 py-0.5 sm:px-6 sm:py-1.5 shadow-xl">
+            <div class="font-racing text-[10px] sm:text-base font-black text-white tracking-wide whitespace-nowrap">
+              SOAL <span id="hud-q-current" class="text-amber-300">1</span>/<span id="hud-q-total">20</span>
             </div>
-            <div class="flex items-center gap-1.5 text-xs sm:text-sm font-racing font-extrabold text-cyan-300">
+            <div class="flex items-center gap-1 text-[10px] sm:text-sm font-racing font-extrabold text-cyan-300">
               <span>⏱</span>
               <span id="hud-center-clock">00:30</span>
             </div>
           </div>
 
           <!-- Right Blue P2 Badge -->
-          <div class="flex items-center gap-2 bg-gradient-to-l from-blue-800 via-blue-600 to-sky-700 border-2 border-sky-300 rounded-2xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-xl">
+          <div class="flex items-center gap-1.5 sm:gap-2 bg-gradient-to-l from-blue-800 via-blue-600 to-sky-700 border border-sky-300 sm:border-2 rounded-xl sm:rounded-2xl px-1.5 py-1 sm:px-3.5 sm:py-2 shadow-xl">
             <div class="text-right">
-              <div class="flex items-center justify-end gap-1.5">
-                <span id="hud-p2-pos" class="px-1.5 py-0.5 rounded bg-black/35 text-[9px] font-racing font-bold text-amber-300">POS 2</span>
-                <span id="hud-p2-name" class="text-xs sm:text-sm font-extrabold text-white truncate max-w-[85px] sm:max-w-[130px]">Pemain 2</span>
+              <div class="flex items-center justify-end gap-1 sm:gap-1.5">
+                <span id="hud-p2-pos" class="px-1 py-0.5 rounded bg-black/35 text-[8px] sm:text-[9px] font-racing font-bold text-amber-300">POS 2</span>
+                <span id="hud-p2-name" class="text-[10px] sm:text-sm font-extrabold text-white truncate max-w-[58px] sm:max-w-[130px]">Pemain 2</span>
               </div>
-              <div class="flex items-center justify-end gap-2 mt-0.5">
-                <span class="text-[10px] sm:text-xs font-bold text-sky-100">Langkah: <strong id="hud-p2-steps" class="text-white">0</strong></span>
-                <div class="w-14 sm:w-20 h-2 bg-black/40 rounded-full overflow-hidden">
+              <div class="flex items-center justify-end gap-1.5 sm:gap-2 mt-0.5">
+                <span class="text-[9px] sm:text-xs font-bold text-sky-100">L:<strong id="hud-p2-steps" class="text-white">0</strong></span>
+                <div class="w-10 sm:w-20 h-1.5 sm:h-2 bg-black/40 rounded-full overflow-hidden">
                   <div id="hud-p2-mini-bar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%;"></div>
                 </div>
               </div>
             </div>
-            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white text-blue-700 font-racing font-black text-sm sm:text-lg flex items-center justify-center shadow">
+            <div class="w-6 h-6 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-white text-blue-700 font-racing font-black text-xs sm:text-lg flex items-center justify-center shadow">
               P2
             </div>
           </div>
         </div>
 
         <!-- Middle Dynamic Feedback Toasts (Left P1 / Right P2) -->
-        <div class="grid grid-cols-2 gap-3 sm:gap-8 my-auto px-2 sm:px-8">
+        <div class="grid grid-cols-2 gap-2 sm:gap-8 my-auto px-1 sm:px-8">
           <div class="flex justify-center">
-            <div id="p1-race-toast" class="hidden animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2">
+            <div id="p1-race-toast" class="hidden animate-pop px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl font-racing font-black text-[10px] sm:text-base text-center shadow-2xl border-2">
               BENAR! MOBIL MELAJU!
             </div>
           </div>
           <div class="flex justify-center">
-            <div id="p2-race-toast" class="hidden animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2">
+            <div id="p2-race-toast" class="hidden animate-pop px-2.5 py-1 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl font-racing font-black text-[10px] sm:text-base text-center shadow-2xl border-2">
               BENAR! MOBIL MELAJU!
             </div>
           </div>
         </div>
 
         <!-- Bottom START ---> FINIS Visual Track Progress Bar (Directly above Quiz Panels) -->
-        <div class="w-full max-w-4xl mx-auto bg-slate-950/80 backdrop-blur-md border border-white/20 rounded-2xl px-3 py-1.5 sm:px-5 sm:py-2 flex items-center gap-3 shadow-xl">
+        <div class="w-full max-w-4xl mx-auto bg-slate-950/80 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl px-2 py-1 sm:px-5 sm:py-2 flex items-center gap-2 sm:gap-3 shadow-xl">
           <!-- START Flag Pill -->
-          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 border border-cyan-400 text-[10px] sm:text-xs font-racing font-black text-cyan-300 shrink-0">
+          <div class="flex items-center gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-slate-900 border border-cyan-400 text-[9px] sm:text-xs font-racing font-black text-cyan-300 shrink-0">
             <span>🏁</span>
             <span>START</span>
           </div>
 
           <!-- Progress Track Line with Red & Blue Car Icons -->
-          <div class="relative flex-1 h-7 flex items-center">
+          <div class="relative flex-1 h-5 sm:h-7 flex items-center">
             <!-- Base Track Line -->
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
-              <div id="minimap-p1-bar" class="absolute top-0 left-0 h-1 bg-rose-500 transition-all duration-500" style="width: 0%;"></div>
-              <div id="minimap-p2-bar" class="absolute bottom-0 left-0 h-1 bg-sky-400 transition-all duration-500" style="width: 0%;"></div>
+            <div class="w-full h-1.5 sm:h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
+              <div id="minimap-p1-bar" class="absolute top-0 left-0 h-0.5 sm:h-1 bg-rose-500 transition-all duration-500" style="width: 0%;"></div>
+              <div id="minimap-p2-bar" class="absolute bottom-0 left-0 h-0.5 sm:h-1 bg-sky-400 transition-all duration-500" style="width: 0%;"></div>
             </div>
 
             <!-- Red Car Marker (Top Track) -->
-            <div id="minimap-p1-dot" class="absolute -top-1.5 -ml-3.5 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
-              <span class="text-sm sm:text-base drop-shadow" title="Pemain 1">🏎️</span>
+            <div id="minimap-p1-dot" class="absolute -top-1.5 -ml-3 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
+              <span class="text-xs sm:text-base drop-shadow" title="Pemain 1">🏎️</span>
             </div>
 
             <!-- Blue Car Marker (Bottom Track) -->
-            <div id="minimap-p2-dot" class="absolute -bottom-1.5 -ml-3.5 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
-              <span class="text-sm sm:text-base drop-shadow" style="filter: hue-rotate(215deg) saturate(1.6);" title="Pemain 2">🏎️</span>
+            <div id="minimap-p2-dot" class="absolute -bottom-1.5 -ml-3 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
+              <span class="text-xs sm:text-base drop-shadow" style="filter: hue-rotate(215deg) saturate(1.6);" title="Pemain 2">🏎️</span>
             </div>
           </div>
 
           <!-- FINIS Flag Pill -->
-          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 border border-amber-400 text-[10px] sm:text-xs font-racing font-black text-amber-300 shrink-0">
+          <div class="flex items-center gap-1 px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-lg sm:rounded-xl bg-slate-900 border border-amber-400 text-[9px] sm:text-xs font-racing font-black text-amber-300 shrink-0">
             <span>FINIS</span>
             <span>🏁</span>
           </div>
@@ -536,7 +536,7 @@
 
         <!-- Pre-Race 3-2-1-GO Countdown Overlay -->
         <div id="start-countdown-overlay" class="hidden absolute inset-0 flex items-center justify-center bg-slate-950/35 backdrop-blur-[2px]">
-          <div id="start-countdown-text" class="font-racing text-6xl sm:text-8xl font-black title-3d-gold animate-pop">
+          <div id="start-countdown-text" class="font-racing text-5xl sm:text-8xl font-black title-3d-gold animate-pop">
             3
           </div>
         </div>
@@ -546,20 +546,20 @@
     <!-- =================================================================== -->
     <!-- 3. BOTTOM SPLIT QUESTION PANELS (CRISP WHITE CARDS WITH RED/BLUE)   -->
     <!-- =================================================================== -->
-    <section id="quiz-panels-section" class="hidden w-full h-[46%] sm:h-[43%] bg-slate-900 p-1.5 sm:p-2.5 grid grid-cols-2 gap-1.5 sm:gap-3 overflow-hidden">
+    <section id="quiz-panels-section" class="hidden w-full h-[58%] sm:h-[43%] bg-slate-900 p-1 sm:p-2.5 grid grid-cols-2 gap-1 sm:gap-3 overflow-hidden">
 
       <!-- =============================================================== -->
       <!-- PANEL PEMAIN 1 (LEFT — RED BORDER & CRISP WHITE CARD)           -->
       <!-- =============================================================== -->
-      <div id="panel-p1" class="relative flex flex-col justify-between rounded-2xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-[3px] border-rose-600 shadow-[0_0_25px_rgba(225,29,72,0.45)] p-2 sm:p-3 overflow-y-auto text-slate-900">
+      <div id="panel-p1" class="relative flex flex-col justify-between rounded-xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-2 sm:border-[3px] border-rose-600 shadow-[0_0_25px_rgba(225,29,72,0.45)] p-1.5 sm:p-3 overflow-y-auto overscroll-contain text-slate-900">
         <!-- Top Header Bar inside Card -->
-        <div class="flex items-center justify-between gap-1.5 pb-1.5 border-b border-slate-200">
+        <div class="flex items-center justify-between gap-1 pb-1 border-b border-slate-200 shrink-0">
           <!-- Avatar + Red Name Pill -->
-          <div class="flex items-center gap-1.5 min-w-0">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-100 border-2 border-rose-500 flex items-center justify-center text-sm sm:text-base shrink-0">
+          <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
+            <div class="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-rose-100 border border-rose-500 sm:border-2 flex items-center justify-center text-[10px] sm:text-base shrink-0">
               🧑‍🚀
             </div>
-            <div class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold text-xs sm:text-sm truncate shadow-sm">
+            <div class="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold text-[10px] sm:text-sm truncate shadow-sm">
               <span id="p1-panel-name">Pemain 1</span>
             </div>
           </div>
@@ -569,48 +569,48 @@
             <span id="p1-category-badge" class="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-purple-600 text-white text-[10px] font-bold">
               Kategori
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-white text-[10px] sm:text-xs font-bold">
-              Soal <span id="p1-q-num">1</span>/<span class="p-q-total">20</span>
+            <span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-800 text-white text-[9px] sm:text-xs font-bold">
+              <span id="p1-q-num">1</span>/<span class="p-q-total">20</span>
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[10px] sm:text-xs">
+            <span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[9px] sm:text-xs">
               ⏱<span id="p1-timer">30</span>s
             </span>
           </div>
         </div>
 
         <!-- Thin Independent Timer Bar -->
-        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-1 shrink-0">
+        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-0.5 sm:my-1 shrink-0">
           <div id="p1-timer-bar" class="h-full bg-rose-600 transition-all duration-200" style="width: 100%;"></div>
         </div>
 
         <!-- Question Text -->
-        <div class="my-auto py-1 px-1">
-          <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-0.5">
-            <span id="p1-category-mobile" class="md:hidden text-purple-700">IPAS</span>
-            <span id="p1-status-indicator" class="text-rose-600 ml-auto">Pilih jawaban yang benar!</span>
+        <div class="my-auto py-0.5 sm:py-1 px-0.5 sm:px-1 shrink-0">
+          <div class="flex items-center justify-between text-[9px] sm:text-[10px] font-bold text-slate-500 mb-0.5">
+            <span id="p1-category-mobile" class="md:hidden text-purple-700 truncate max-w-[55%]">IPAS</span>
+            <span id="p1-status-indicator" class="text-rose-600 ml-auto truncate">Pilih jawaban!</span>
           </div>
-          <p id="p1-question-text" class="text-xs sm:text-sm md:text-[15px] font-bold text-slate-900 leading-snug text-center">
+          <p id="p1-question-text" class="text-[11px] sm:text-sm md:text-[15px] font-bold text-slate-900 leading-[1.28] sm:leading-snug text-center">
             Memuat pertanyaan IPAS...
           </p>
         </div>
 
         <!-- 2x2 Options Grid (A, B, C, D) -->
-        <div id="p1-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-1">
-          <button type="button" data-player="1" data-option="A" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">A</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan A</span>
+        <div id="p1-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 mt-0.5 sm:mt-1 shrink-0">
+          <button type="button" data-player="1" data-option="A" class="quiz-option-pill p1-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">A</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan A</span>
           </button>
-          <button type="button" data-player="1" data-option="B" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">B</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan B</span>
+          <button type="button" data-player="1" data-option="B" class="quiz-option-pill p1-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">B</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan B</span>
           </button>
-          <button type="button" data-player="1" data-option="C" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">C</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan C</span>
+          <button type="button" data-player="1" data-option="C" class="quiz-option-pill p1-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">C</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan C</span>
           </button>
-          <button type="button" data-player="1" data-option="D" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">D</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan D</span>
+          <button type="button" data-player="1" data-option="D" class="quiz-option-pill p1-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">D</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan D</span>
           </button>
         </div>
       </div>
@@ -618,15 +618,15 @@
       <!-- =============================================================== -->
       <!-- PANEL PEMAIN 2 (RIGHT — BLUE BORDER & CRISP WHITE CARD)         -->
       <!-- =============================================================== -->
-      <div id="panel-p2" class="relative flex flex-col justify-between rounded-2xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-[3px] border-blue-600 shadow-[0_0_25px_rgba(37,99,235,0.45)] p-2 sm:p-3 overflow-y-auto text-slate-900">
+      <div id="panel-p2" class="relative flex flex-col justify-between rounded-xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-2 sm:border-[3px] border-blue-600 shadow-[0_0_25px_rgba(37,99,235,0.45)] p-1.5 sm:p-3 overflow-y-auto overscroll-contain text-slate-900">
         <!-- Top Header Bar inside Card -->
-        <div class="flex items-center justify-between gap-1.5 pb-1.5 border-b border-slate-200">
+        <div class="flex items-center justify-between gap-1 pb-1 border-b border-slate-200 shrink-0">
           <!-- Avatar + Blue Name Pill -->
-          <div class="flex items-center gap-1.5 min-w-0">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-sm sm:text-base shrink-0">
+          <div class="flex items-center gap-1 sm:gap-1.5 min-w-0">
+            <div class="w-5 h-5 sm:w-8 sm:h-8 rounded-full bg-blue-100 border border-blue-500 sm:border-2 flex items-center justify-center text-[10px] sm:text-base shrink-0">
               🧑‍🚀
             </div>
-            <div class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-sky-600 text-white font-extrabold text-xs sm:text-sm truncate shadow-sm">
+            <div class="px-1.5 sm:px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-sky-600 text-white font-extrabold text-[10px] sm:text-sm truncate shadow-sm">
               <span id="p2-panel-name">Pemain 2</span>
             </div>
           </div>
@@ -636,48 +636,48 @@
             <span id="p2-category-badge" class="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-sky-600 text-white text-[10px] font-bold">
               Kategori
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-white text-[10px] sm:text-xs font-bold">
-              Soal <span id="p2-q-num">1</span>/<span class="p-q-total">20</span>
+            <span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-800 text-white text-[9px] sm:text-xs font-bold">
+              <span id="p2-q-num">1</span>/<span class="p-q-total">20</span>
             </span>
-            <span class="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[10px] sm:text-xs">
+            <span class="px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[9px] sm:text-xs">
               ⏱<span id="p2-timer">30</span>s
             </span>
           </div>
         </div>
 
         <!-- Thin Independent Timer Bar -->
-        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-1 shrink-0">
+        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-0.5 sm:my-1 shrink-0">
           <div id="p2-timer-bar" class="h-full bg-blue-600 transition-all duration-200" style="width: 100%;"></div>
         </div>
 
         <!-- Question Text -->
-        <div class="my-auto py-1 px-1">
-          <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-0.5">
-            <span id="p2-category-mobile" class="md:hidden text-blue-700">IPAS</span>
-            <span id="p2-status-indicator" class="text-blue-600 ml-auto">Pilih jawaban yang benar!</span>
+        <div class="my-auto py-0.5 sm:py-1 px-0.5 sm:px-1 shrink-0">
+          <div class="flex items-center justify-between text-[9px] sm:text-[10px] font-bold text-slate-500 mb-0.5">
+            <span id="p2-category-mobile" class="md:hidden text-blue-700 truncate max-w-[55%]">IPAS</span>
+            <span id="p2-status-indicator" class="text-blue-600 ml-auto truncate">Pilih jawaban!</span>
           </div>
-          <p id="p2-question-text" class="text-xs sm:text-sm md:text-[15px] font-bold text-slate-900 leading-snug text-center">
+          <p id="p2-question-text" class="text-[11px] sm:text-sm md:text-[15px] font-bold text-slate-900 leading-[1.28] sm:leading-snug text-center">
             Memuat pertanyaan IPAS...
           </p>
         </div>
 
         <!-- 2x2 Options Grid (A, B, C, D) -->
-        <div id="p2-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-1">
-          <button type="button" data-player="2" data-option="A" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">A</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan A</span>
+        <div id="p2-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 mt-0.5 sm:mt-1 shrink-0">
+          <button type="button" data-player="2" data-option="A" class="quiz-option-pill p2-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">A</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan A</span>
           </button>
-          <button type="button" data-player="2" data-option="B" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">B</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan B</span>
+          <button type="button" data-player="2" data-option="B" class="quiz-option-pill p2-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">B</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan B</span>
           </button>
-          <button type="button" data-player="2" data-option="C" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">C</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan C</span>
+          <button type="button" data-player="2" data-option="C" class="quiz-option-pill p2-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">C</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan C</span>
           </button>
-          <button type="button" data-player="2" data-option="D" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
-            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">D</span>
-            <span class="opt-text flex-1 leading-tight">Pilihan D</span>
+          <button type="button" data-player="2" data-option="D" class="quiz-option-pill p2-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0">D</span>
+            <span class="opt-text flex-1 leading-[1.2] sm:leading-tight">Pilihan D</span>
           </button>
         </div>
       </div>
@@ -2923,7 +2923,7 @@
 
         const viewportSec = document.getElementById("race-viewport-section");
         viewportSec.classList.remove("h-full");
-        viewportSec.classList.add("h-[54%]", "sm:h-[57%]");
+        viewportSec.classList.add("h-[42%]", "sm:h-[57%]");
 
         setTimeout(() => this.scene3D.handleResize(), 60);
         setTimeout(() => this.scene3D.handleResize(), 520);
@@ -3020,10 +3020,12 @@
             const optKey = btn.getAttribute("data-option");
             btn.disabled = false;
             btn.querySelector(".opt-text").textContent = q.options[optKey];
-            btn.className = `quiz-option-pill p${pNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer`;
+            btn.className = `quiz-option-pill p${pNum}-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] cursor-pointer`;
             const letterBadge = btn.querySelector("span:first-child");
-            letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0";
+            letterBadge.className = "w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0";
           });
+          const panelEl = document.getElementById(`panel-p${pNum}`);
+          if (panelEl) panelEl.scrollTop = 0;
         });
 
         this.timerInterval = setInterval(() => {
@@ -3136,14 +3138,14 @@
           if (opt === chosenOption) {
             if (isCorrect) {
               // Vibrant Emerald Green Pill matching "D | Alveolus" in Reference Screenshot!
-              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-extrabold !bg-gradient-to-b !from-lime-500 !to-green-600 !border-green-800 !text-white shadow-md`;
-              letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white text-green-700 font-racing font-black text-xs flex items-center justify-center shrink-0";
+              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-extrabold leading-[1.2] !bg-gradient-to-b !from-lime-500 !to-green-600 !border-green-800 !text-white shadow-md`;
+              letterBadge.className = "w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-white text-green-700 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0";
             } else {
-              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-extrabold !bg-gradient-to-b !from-rose-500 !to-red-600 !border-red-800 !text-white shadow-md`;
-              letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white text-red-700 font-racing font-black text-xs flex items-center justify-center shrink-0";
+              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-extrabold leading-[1.2] !bg-gradient-to-b !from-rose-500 !to-red-600 !border-red-800 !text-white shadow-md`;
+              letterBadge.className = "w-5 h-5 sm:w-7 sm:h-7 rounded-md sm:rounded-lg bg-white text-red-700 font-racing font-black text-[10px] sm:text-xs flex items-center justify-center shrink-0";
             }
           } else {
-            btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold opacity-55`;
+            btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-1.5 sm:gap-2 p-1 sm:p-2 rounded-lg sm:rounded-xl text-[10.5px] sm:text-sm font-bold leading-[1.2] opacity-55`;
           }
         });
       }
@@ -3340,7 +3342,7 @@
         document.getElementById("landing-overlay").classList.remove("hidden");
 
         const viewportSec = document.getElementById("race-viewport-section");
-        viewportSec.classList.remove("h-[54%]", "sm:h-[57%]");
+        viewportSec.classList.remove("h-[42%]", "sm:h-[57%]");
         viewportSec.classList.add("h-full");
 
         this.scene3D.setCameraMode("SHOWCASE");
@@ -3978,18 +3980,16 @@
       document.getElementById("btn-open-guide").addEventListener("click", () => {
         document.getElementById("modal-guide").classList.remove("hidden");
       });
-      document.getElementById("btn-close-guide").addEventListener("click", () => {
-        document.getElementById("modal-guide").classList.add("hidden");
-      });
-      document.getElementById("btn-ok-guide").addEventListener("click", () => {
-        document.getElementById("modal-guide").classList.add("hidden");
-      });
+
+      const closeGuide = () => document.getElementById("modal-guide").classList.add("hidden");
+      document.getElementById("btn-close-guide").addEventListener("click", closeGuide);
+      document.getElementById("btn-ok-guide").addEventListener("click", closeGuide);
 
       document.getElementById("btn-toggle-sound").addEventListener("click", () => {
-        soundEngine.init();
-        const isOn = soundEngine.toggleMute();
-        document.getElementById("sound-icon-on").classList.toggle("hidden", !isOn);
-        document.getElementById("sound-icon-off").classList.toggle("hidden", isOn);
+        const isSoundOn = soundEngine.toggleMute();
+        document.getElementById("sound-icon-on").classList.toggle("hidden", !isSoundOn);
+        document.getElementById("sound-icon-off").classList.toggle("hidden", isSoundOn);
+        showToast(isSoundOn ? "🔊 Suara diaktifkan" : "🔇 Suara dimatikan");
       });
 
       document.getElementById("btn-exit-race").addEventListener("click", () => {
@@ -3998,6 +3998,7 @@
 
       document.getElementById("btn-play-again").addEventListener("click", () => {
         confettiManager.stop();
+        document.getElementById("modal-results").classList.add("hidden");
         gameEngine.startNewMatch();
       });
 
@@ -4005,12 +4006,41 @@
         gameEngine.returnToMainMenu();
       });
 
+      // Smart Tap vs. Scroll Detection (prevents accidental option clicks when scrolling on mobile,
+      // while preserving instant simultaneous multi-touch for 2 players)
+      const activeOptionPointers = new Map();
+
       document.querySelectorAll(".quiz-option-pill").forEach((btn) => {
         btn.addEventListener("pointerdown", (e) => {
-          e.preventDefault();
+          if (btn.disabled) return;
+          activeOptionPointers.set(e.pointerId, {
+            x: e.clientX,
+            y: e.clientY,
+            btn,
+            moved: false
+          });
+        });
+
+        btn.addEventListener("pointermove", (e) => {
+          const rec = activeOptionPointers.get(e.pointerId);
+          if (!rec) return;
+          if (Math.abs(e.clientX - rec.x) > 8 || Math.abs(e.clientY - rec.y) > 8) {
+            rec.moved = true;
+          }
+        });
+
+        btn.addEventListener("pointerup", (e) => {
+          const rec = activeOptionPointers.get(e.pointerId);
+          activeOptionPointers.delete(e.pointerId);
+          if (!rec || rec.moved || rec.btn !== btn || btn.disabled) return;
+
           const pNum = Number(btn.getAttribute("data-player"));
           const opt = btn.getAttribute("data-option");
           gameEngine.submitAnswer(pNum, opt);
+        });
+
+        btn.addEventListener("pointercancel", (e) => {
+          activeOptionPointers.delete(e.pointerId);
         });
       });
 
