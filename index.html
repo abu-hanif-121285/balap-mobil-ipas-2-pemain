@@ -1,0 +1,4033 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SCIENCE RACING CHALLENGE 3D — IPAS Kelas 6 SD</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Fredoka / Montserrat / Orbitron / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Three.js (r128) for 3D Realistic Scientific Racing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- SheetJS (xlsx) for Excel Template Download & Upload -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --font-display: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #081229;
+      color: #f8fafc;
+      font-family: var(--font-body);
+      user-select: none;
+    }
+
+    .font-racing {
+      font-family: var(--font-display);
+      letter-spacing: 0.03em;
+    }
+
+    /* Fullscreen 3D Canvas Container */
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1d4ed8 0%, #38bdf8 55%, #0f172a 100%);
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      outline: none;
+    }
+
+    /* Metallic 3D Title Effect matching Reference Art */
+    .title-3d-metallic {
+      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 45%, #94a3b8 55%, #f8fafc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 0 #0f172a) drop-shadow(0 8px 18px rgba(0, 0, 0, 0.75));
+    }
+
+    .title-3d-gold {
+      background: linear-gradient(180deg, #fef08a 0%, #facc15 45%, #ca8a04 60%, #fde047 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 0 #713f12) drop-shadow(0 8px 20px rgba(234, 179, 8, 0.65));
+    }
+
+    /* Glossy Arcade Buttons matching Reference Art */
+    .btn-gold-arcade {
+      background: linear-gradient(180deg, #fde047 0%, #facc15 50%, #eab308 100%);
+      border: 2px solid #fef9c3;
+      box-shadow: 0 5px 0 #a16207, 0 10px 24px rgba(234, 179, 8, 0.55);
+      color: #1e293b;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+    .btn-gold-arcade:hover {
+      filter: brightness(1.06);
+      transform: translateY(-2px);
+    }
+    .btn-gold-arcade:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #a16207, 0 4px 12px rgba(234, 179, 8, 0.45);
+    }
+
+    .btn-blue-arcade {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 52%, #0369a1 100%);
+      border: 2px solid #bae6fd;
+      box-shadow: 0 4px 0 #0c4a6e, 0 8px 20px rgba(2, 132, 199, 0.45);
+      color: #ffffff;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+    .btn-blue-arcade:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+    }
+    .btn-blue-arcade:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #0c4a6e;
+    }
+
+    .btn-navy-arcade {
+      background: linear-gradient(180deg, #334155 0%, #1e293b 52%, #0f172a 100%);
+      border: 2px solid #64748b;
+      box-shadow: 0 4px 0 #020617, 0 8px 20px rgba(15, 23, 42, 0.55);
+      color: #f8fafc;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+    .btn-navy-arcade:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+    }
+    .btn-navy-arcade:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #020617;
+    }
+
+    /* Sci-Fi Frame Panel */
+    .sci-frame {
+      background: linear-gradient(180deg, rgba(13, 31, 68, 0.94) 0%, rgba(8, 19, 44, 0.96) 100%);
+      border: 2px solid #38bdf8;
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    /* Quiz Answer Option Pills (Light Card Style matching Screenshot) */
+    .quiz-option-pill {
+      background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 2px 0 #94a3b8;
+      color: #0f172a;
+      transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
+      touch-action: manipulation;
+    }
+    .quiz-option-pill:not(:disabled):hover {
+      border-color: #0284c7;
+      background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+      transform: translateY(-1px);
+    }
+    .quiz-option-pill:not(:disabled):active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 #94a3b8;
+    }
+
+    /* Feedback Pop Animation */
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.75) translateY(10px); }
+      70% { opacity: 1; transform: scale(1.05) translateY(-2px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .animate-pop {
+      animation: popIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.25);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.55);
+      border-radius: 999px;
+    }
+
+    /* 2D Confetti Overlay */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 60;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+
+  <!-- ===================================================================== -->
+  <!-- 1. INITIAL LOADING SCREEN                                             -->
+  <!-- ===================================================================== -->
+  <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-b from-sky-900 via-slate-900 to-slate-950 px-6 transition-opacity duration-500">
+    <div class="relative mb-5 flex items-center justify-center">
+      <div class="h-24 w-24 rounded-full border-4 border-amber-400/25 border-t-amber-400 animate-spin"></div>
+      <div class="absolute h-16 w-16 rounded-full border-4 border-cyan-400/25 border-b-cyan-400 animate-spin" style="animation-direction: reverse; animation-duration: 1.3s;"></div>
+      <span class="absolute text-2xl">🏎️</span>
+    </div>
+    <h1 class="font-racing text-2xl sm:text-4xl font-black text-center title-3d-metallic">
+      SCIENCE RACING CHALLENGE 3D
+    </h1>
+    <p class="mt-2 text-xs sm:text-sm text-amber-300 tracking-widest uppercase font-bold">
+      Menyiapkan Lintasan Balap &amp; Laboratorium IPAS Kelas 6...
+    </p>
+    <div class="mt-5 w-64 sm:w-80 h-3 bg-slate-900/90 rounded-full overflow-hidden border-2 border-cyan-400/50 p-0.5">
+      <div id="loading-bar" class="h-full w-0 bg-gradient-to-r from-rose-500 via-amber-400 to-cyan-400 transition-all duration-300 rounded-full"></div>
+    </div>
+    <span id="loading-percent" class="mt-2 text-xs font-racing text-cyan-200">0%</span>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. MAIN APPLICATION CONTAINER                                         -->
+  <!-- ===================================================================== -->
+  <div id="app-root" class="relative w-full h-full flex flex-col overflow-hidden">
+
+    <!-- TOP / BACKGROUND 3D VIEWPORT -->
+    <section id="race-viewport-section" class="relative w-full h-full transition-all duration-500 ease-out">
+      <div id="canvas-container"></div>
+
+      <!-- Top-Left Sound Circle Button (Matches Top-Left Speaker Icon in Screenshot) -->
+      <div class="absolute top-3 left-3 z-30 flex items-center gap-2">
+        <button id="btn-toggle-sound" type="button" title="Aktifkan / Matikan Suara"
+          class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-gradient-to-b from-sky-400 to-blue-700 border-2 border-sky-200 shadow-lg flex items-center justify-center text-white hover:scale-105 transition cursor-pointer">
+          <span id="sound-icon-on">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          </span>
+          <span id="sound-icon-off" class="hidden">
+            <svg class="w-5 h-5 text-rose-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          </span>
+        </button>
+
+        <button id="btn-exit-race" type="button" title="Kembali ke Menu Utama"
+          class="hidden items-center gap-1.5 px-3 py-2 rounded-full bg-slate-900/85 hover:bg-rose-700 border border-white/25 text-xs font-bold text-white shadow-lg transition cursor-pointer">
+          <span>🏠 Menu</span>
+        </button>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- 2A. LANDING / OPENING SCREEN OVERLAY (MATCHING TOP-LEFT MOCKUP)   -->
+      <!-- ================================================================= -->
+      <div id="landing-overlay" class="absolute inset-0 z-20 flex flex-col justify-between p-3 sm:p-5 md:p-6 overflow-y-auto bg-gradient-to-b from-slate-950/45 via-transparent to-slate-950/75">
+
+        <!-- Decorative Side Science & Hero Silhouettes / Holograms (Subtle Framings) -->
+        <div class="pointer-events-none hidden lg:flex fixed left-4 top-16 flex-col items-center opacity-80">
+          <div class="w-28 h-28 rounded-full bg-cyan-500/15 border border-cyan-300/30 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(34,211,238,0.3)]">
+            <!-- Holographic Atom / Human Biology Emblem -->
+            <svg class="w-16 h-16 text-cyan-300" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="32" cy="14" r="6" fill="rgba(56,189,248,0.3)" />
+              <path d="M20 26 C20 22, 44 22, 44 26 L42 44 L36 44 L36 58 L28 58 L28 44 L22 44 Z" fill="rgba(56,189,248,0.18)" />
+              <ellipse cx="32" cy="34" rx="24" ry="8" transform="rotate(-25 32 34)" stroke="#38bdf8" />
+              <ellipse cx="32" cy="34" rx="24" ry="8" transform="rotate(25 32 34)" stroke="#f43f5e" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="pointer-events-none hidden lg:flex fixed right-4 top-14 flex-col items-center opacity-85">
+          <div class="w-28 h-28 rounded-full bg-indigo-500/15 border border-amber-300/30 backdrop-blur-sm flex items-center justify-center shadow-[0_0_30px_rgba(251,191,36,0.25)]">
+            <!-- Cosmic Saturn Planet Emblem -->
+            <svg class="w-20 h-20" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="14" fill="url(#saturnGrad)" />
+              <ellipse cx="32" cy="32" rx="27" ry="7" transform="rotate(-22 32 32)" stroke="#fde047" stroke-width="3" />
+              <defs>
+                <linearGradient id="saturnGrad" x1="18" y1="18" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fbbf24" />
+                  <stop offset="1" stop-color="#b45309" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+
+        <!-- TOP LOGO BANNER WITH CHECKERED FLAGS -->
+        <header class="text-center mt-1 sm:mt-2 max-w-4xl mx-auto relative">
+          <div class="inline-flex items-center justify-center gap-2 sm:gap-4">
+            <!-- Left Checkered Flag SVG -->
+            <svg class="w-10 h-10 sm:w-14 sm:h-14 shrink-0 -rotate-12 drop-shadow-lg" viewBox="0 0 64 64">
+              <path d="M12 56 L16 12" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round" />
+              <path d="M16 12 C26 8, 36 16, 48 12 L45 34 C33 38, 23 30, 14 34 Z" fill="#ffffff" stroke="#0f172a" stroke-width="2" />
+              <path d="M16 12 L24 11 L23 18 L15 19 Z M32 13 L40 13 L39 20 L31 20 Z M23 18 L31 18 L30 25 L22 25 Z M39 20 L47 19 L46 26 L38 26 Z M15 26 L22 25 L21 32 L14 33 Z M30 25 L38 26 L37 33 L29 32 Z" fill="#0f172a" />
+            </svg>
+
+            <div>
+              <h1 class="font-racing text-2xl sm:text-4xl md:text-5xl font-black leading-none tracking-tight title-3d-metallic">
+                SCIENCE RACING
+              </h1>
+              <h2 class="font-racing text-2xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight title-3d-gold -mt-1">
+                CHALLENGE 3D
+              </h2>
+            </div>
+
+            <!-- Right Checkered Flag SVG -->
+            <svg class="w-10 h-10 sm:w-14 sm:h-14 shrink-0 rotate-12 drop-shadow-lg" viewBox="0 0 64 64">
+              <path d="M52 56 L48 12" stroke="#e2e8f0" stroke-width="4" stroke-linecap="round" />
+              <path d="M48 12 C38 8, 28 16, 16 12 L19 34 C31 38, 41 30, 50 34 Z" fill="#ffffff" stroke="#0f172a" stroke-width="2" />
+              <path d="M48 12 L40 11 L41 18 L49 19 Z M32 13 L24 13 L25 20 L33 20 Z M41 18 L33 18 L34 25 L42 25 Z M25 20 L17 19 L18 26 L26 26 Z M49 26 L42 25 L43 32 L50 33 Z M34 25 L26 26 L27 33 L35 32 Z" fill="#0f172a" />
+            </svg>
+          </div>
+
+          <!-- Tagline Ribbon -->
+          <div class="mt-1.5 flex flex-col items-center gap-1.5">
+            <div class="px-5 py-1 rounded-full bg-gradient-to-r from-blue-900/95 via-sky-600/95 to-blue-900/95 border-2 border-cyan-300 shadow-lg">
+              <p class="font-racing text-xs sm:text-base md:text-lg font-extrabold text-white tracking-wide">
+                "Think Fast, Answer Smart, Race to Win!"
+              </p>
+            </div>
+            <div class="px-4 py-0.5 rounded-full bg-slate-900/90 border border-amber-400/70 text-xs sm:text-sm font-bold text-white shadow">
+              IPAS <span class="text-amber-300 font-extrabold">Kelas 6</span> Semester 1
+            </div>
+          </div>
+
+          <!-- 4 GLOSSY CATEGORY CARDS (MATCHING THE 4 ILLUSTRATED CARDS IN REFERENCE) -->
+          <div class="mt-3 sm:mt-4 grid grid-cols-4 gap-2 sm:gap-3.5 max-w-2xl mx-auto px-1">
+            <!-- Card 1: Sistem Pencernaan (Amber/Orange) -->
+            <div class="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-amber-400 via-orange-500 to-amber-700 border-2 border-amber-200 shadow-[0_6px_18px_rgba(245,158,11,0.5)] flex flex-col items-center justify-between">
+              <svg class="w-10 h-10 sm:w-14 sm:h-14 drop-shadow" viewBox="0 0 64 64" fill="none">
+                <path d="M26 10 C26 18, 22 22, 18 28 C13 36, 17 48, 28 49 C38 50, 46 43, 45 33 C44 25, 36 22, 33 16 L33 10 Z" fill="#fed7aa" stroke="#7c2d12" stroke-width="2.5" />
+                <path d="M24 34 C28 38, 35 37, 38 32" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" />
+              </svg>
+              <span class="mt-1 text-[10px] sm:text-xs font-extrabold text-white text-center leading-tight drop-shadow">
+                Sistem<br/>Pencernaan
+              </span>
+            </div>
+
+            <!-- Card 2: Sistem Pernapasan (Cyan/Sky) -->
+            <div class="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-cyan-400 via-sky-500 to-blue-700 border-2 border-cyan-200 shadow-[0_6px_18px_rgba(14,165,233,0.5)] flex flex-col items-center justify-between">
+              <svg class="w-10 h-10 sm:w-14 sm:h-14 drop-shadow" viewBox="0 0 64 64" fill="none">
+                <path d="M32 10 L32 26 M32 24 L23 31 M32 24 L41 31" stroke="#f8fafc" stroke-width="3.5" stroke-linecap="round" />
+                <path d="M27 22 C18 22, 12 32, 13 44 C14 50, 21 51, 27 48 C29 47, 29 36, 27 22 Z" fill="#fda4af" stroke="#881337" stroke-width="2.2" />
+                <path d="M37 22 C46 22, 52 32, 51 44 C50 50, 43 51, 37 48 C35 47, 35 36, 37 22 Z" fill="#fda4af" stroke="#881337" stroke-width="2.2" />
+              </svg>
+              <span class="mt-1 text-[10px] sm:text-xs font-extrabold text-white text-center leading-tight drop-shadow">
+                Sistem<br/>Pernapasan
+              </span>
+            </div>
+
+            <!-- Card 3: Sistem Tata Surya (Royal Blue / Gold Saturn) -->
+            <div class="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-blue-500 via-indigo-600 to-slate-900 border-2 border-sky-300 shadow-[0_6px_18px_rgba(79,70,229,0.5)] flex flex-col items-center justify-between">
+              <svg class="w-10 h-10 sm:w-14 sm:h-14 drop-shadow" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="13" fill="#fbbf24" stroke="#92400e" stroke-width="2" />
+                <ellipse cx="32" cy="32" rx="25" ry="7" transform="rotate(-24 32 32)" stroke="#fef08a" stroke-width="3.2" />
+                <circle cx="50" cy="16" r="2.5" fill="#ffffff" />
+              </svg>
+              <span class="mt-1 text-[10px] sm:text-xs font-extrabold text-white text-center leading-tight drop-shadow">
+                Sistem<br/>Tata Surya
+              </span>
+            </div>
+
+            <!-- Card 4: Jejak Pahlawan (Crimson Red / Merah Putih Flag) -->
+            <div class="rounded-2xl p-2 sm:p-3 bg-gradient-to-b from-rose-500 via-red-600 to-red-900 border-2 border-rose-200 shadow-[0_6px_18px_rgba(225,29,72,0.5)] flex flex-col items-center justify-between">
+              <svg class="w-10 h-10 sm:w-14 sm:h-14 drop-shadow" viewBox="0 0 64 64" fill="none">
+                <path d="M16 54 L16 12" stroke="#f8fafc" stroke-width="3.5" stroke-linecap="round" />
+                <path d="M16 14 C26 10, 38 18, 48 14 L48 25 C38 29, 26 21, 16 25 Z" fill="#ef4444" stroke="#7f1d1d" stroke-width="1.5" />
+                <path d="M16 25 C26 21, 38 29, 48 25 L48 36 C38 40, 26 32, 16 36 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                <circle cx="28" cy="46" r="3" fill="#fde047" />
+                <circle cx="38" cy="45" r="3" fill="#fde047" />
+              </svg>
+              <span class="mt-1 text-[10px] sm:text-xs font-extrabold text-white text-center leading-tight drop-shadow">
+                Jejak<br/>Pahlawan
+              </span>
+            </div>
+          </div>
+        </header>
+
+        <!-- MIDDLE OPEN VIEWPORT WINDOW: BOTH 3D CARS RACING LIVE ON TRACK! -->
+        <div class="my-auto min-h-[130px] sm:min-h-[175px] pointer-events-none flex items-end justify-center pb-1">
+          <span class="px-3.5 py-1 rounded-full bg-slate-950/65 border border-cyan-300/35 text-[11px] font-bold text-cyan-200 backdrop-blur-sm">
+            🏎️ Kedua Mobil Sedang Melaju • Siap Balapan!
+          </span>
+        </div>
+
+        <!-- BOTTOM PLAYER INPUT PODS & ARCADE BUTTONS -->
+        <div class="w-full max-w-4xl mx-auto space-y-2.5 sm:space-y-3">
+          <!-- Two Sleek Player Name Input Pods -->
+          <div class="grid grid-cols-2 gap-2.5 sm:gap-4 max-w-2xl mx-auto">
+            <!-- Nama Pemain 1 -->
+            <div class="rounded-2xl bg-slate-900/85 border-2 border-rose-400/80 p-2 sm:p-2.5 backdrop-blur-md shadow-lg">
+              <label for="input-p1-name" class="block text-center text-[11px] sm:text-xs font-extrabold text-white mb-1">
+                Nama Pemain 1
+              </label>
+              <div class="flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border-2 border-rose-500">
+                <span id="landing-p1-swatch" class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center text-xs font-black shrink-0">👤</span>
+                <input id="input-p1-name" type="text" maxlength="16" value="Pemain 1" placeholder="Pemain 1"
+                  class="w-full bg-transparent text-xs sm:text-sm font-extrabold text-slate-900 outline-none" />
+              </div>
+            </div>
+
+            <!-- Nama Pemain 2 -->
+            <div class="rounded-2xl bg-slate-900/85 border-2 border-sky-400/80 p-2 sm:p-2.5 backdrop-blur-md shadow-lg">
+              <label for="input-p2-name" class="block text-center text-[11px] sm:text-xs font-extrabold text-white mb-1">
+                Nama Pemain 2
+              </label>
+              <div class="flex items-center gap-2 bg-white rounded-xl px-2.5 py-1.5 border-2 border-blue-500">
+                <span id="landing-p2-swatch" class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-black shrink-0">👤</span>
+                <input id="input-p2-name" type="text" maxlength="16" value="Pemain 2" placeholder="Pemain 2"
+                  class="w-full bg-transparent text-xs sm:text-sm font-extrabold text-slate-900 outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <!-- 3-Button Arcade Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 sm:gap-3 items-center max-w-3xl mx-auto">
+            <button id="btn-open-guide" type="button"
+              class="sm:col-span-3 btn-blue-arcade py-2.5 sm:py-3 px-3 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+              <span class="text-base">📖</span>
+              <span class="leading-tight text-left">PETUNJUK<br class="hidden sm:inline"/> PERMAINAN</span>
+            </button>
+
+            <button id="btn-start-race" type="button"
+              class="sm:col-span-6 btn-gold-arcade py-3 sm:py-3.5 px-6 rounded-2xl font-racing font-black text-base sm:text-xl flex items-center justify-center gap-2.5 cursor-pointer">
+              <span class="text-xl sm:text-2xl">▶</span>
+              <span>MULAI BALAPAN</span>
+            </button>
+
+            <button id="btn-open-teacher" type="button"
+              class="sm:col-span-3 btn-navy-arcade py-2.5 sm:py-3 px-3 rounded-2xl font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+              <span class="text-base text-sky-400">⚙️</span>
+              <span class="leading-tight text-left">PENGATURAN<br class="hidden sm:inline"/> GURU</span>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-300/90 px-2">
+            <span>Konfigurasi: <strong id="landing-total-questions" class="text-amber-300">20 Soal</strong> • Finis <strong id="landing-track-length" class="text-cyan-300">12 Langkah</strong></span>
+            <span>Created by <strong class="text-cyan-300">Wiyanto Abu Hanif</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- 2B. IN-RACE TOP HUD & TRACK PROGRESS BAR (MATCHING TOP-RIGHT ART) -->
+      <!-- ================================================================= -->
+      <div id="race-hud-overlay" class="hidden absolute inset-0 z-10 pointer-events-none flex flex-col justify-between p-2 sm:p-3">
+        <!-- Top Telemetry Row -->
+        <div class="flex items-start justify-between gap-2 pl-12 sm:pl-14">
+          <!-- Left Red P1 Badge -->
+          <div class="flex items-center gap-2 bg-gradient-to-r from-red-700 via-rose-600 to-rose-800 border-2 border-rose-300 rounded-2xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-xl">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white text-rose-700 font-racing font-black text-sm sm:text-lg flex items-center justify-center shadow">
+              P1
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span id="hud-p1-name" class="text-xs sm:text-sm font-extrabold text-white truncate max-w-[85px] sm:max-w-[130px]">Pemain 1</span>
+                <span id="hud-p1-pos" class="px-1.5 py-0.5 rounded bg-black/35 text-[9px] font-racing font-bold text-amber-300">POS 1</span>
+              </div>
+              <div class="flex items-center gap-2 mt-0.5">
+                <div class="w-14 sm:w-20 h-2 bg-black/40 rounded-full overflow-hidden">
+                  <div id="hud-p1-mini-bar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%;"></div>
+                </div>
+                <span class="text-[10px] sm:text-xs font-bold text-rose-100">Langkah: <strong id="hud-p1-steps" class="text-white">0</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center Question & Clock Capsule -->
+          <div class="flex flex-col items-center bg-slate-900/90 border-2 border-sky-400/70 rounded-2xl px-3.5 py-1 sm:px-6 sm:py-1.5 shadow-xl">
+            <div class="font-racing text-xs sm:text-base font-black text-white tracking-wide">
+              SOAL <span id="hud-q-current" class="text-amber-300">1</span> dari <span id="hud-q-total">20</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-xs sm:text-sm font-racing font-extrabold text-cyan-300">
+              <span>⏱</span>
+              <span id="hud-center-clock">00:30</span>
+            </div>
+          </div>
+
+          <!-- Right Blue P2 Badge -->
+          <div class="flex items-center gap-2 bg-gradient-to-l from-blue-800 via-blue-600 to-sky-700 border-2 border-sky-300 rounded-2xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 shadow-xl">
+            <div class="text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                <span id="hud-p2-pos" class="px-1.5 py-0.5 rounded bg-black/35 text-[9px] font-racing font-bold text-amber-300">POS 2</span>
+                <span id="hud-p2-name" class="text-xs sm:text-sm font-extrabold text-white truncate max-w-[85px] sm:max-w-[130px]">Pemain 2</span>
+              </div>
+              <div class="flex items-center justify-end gap-2 mt-0.5">
+                <span class="text-[10px] sm:text-xs font-bold text-sky-100">Langkah: <strong id="hud-p2-steps" class="text-white">0</strong></span>
+                <div class="w-14 sm:w-20 h-2 bg-black/40 rounded-full overflow-hidden">
+                  <div id="hud-p2-mini-bar" class="h-full bg-amber-300 transition-all duration-300" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white text-blue-700 font-racing font-black text-sm sm:text-lg flex items-center justify-center shadow">
+              P2
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle Dynamic Feedback Toasts (Left P1 / Right P2) -->
+        <div class="grid grid-cols-2 gap-3 sm:gap-8 my-auto px-2 sm:px-8">
+          <div class="flex justify-center">
+            <div id="p1-race-toast" class="hidden animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2">
+              BENAR! MOBIL MELAJU!
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div id="p2-race-toast" class="hidden animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2">
+              BENAR! MOBIL MELAJU!
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom START ---> FINIS Visual Track Progress Bar (Directly above Quiz Panels) -->
+        <div class="w-full max-w-4xl mx-auto bg-slate-950/80 backdrop-blur-md border border-white/20 rounded-2xl px-3 py-1.5 sm:px-5 sm:py-2 flex items-center gap-3 shadow-xl">
+          <!-- START Flag Pill -->
+          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 border border-cyan-400 text-[10px] sm:text-xs font-racing font-black text-cyan-300 shrink-0">
+            <span>🏁</span>
+            <span>START</span>
+          </div>
+
+          <!-- Progress Track Line with Red & Blue Car Icons -->
+          <div class="relative flex-1 h-7 flex items-center">
+            <!-- Base Track Line -->
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
+              <div id="minimap-p1-bar" class="absolute top-0 left-0 h-1 bg-rose-500 transition-all duration-500" style="width: 0%;"></div>
+              <div id="minimap-p2-bar" class="absolute bottom-0 left-0 h-1 bg-sky-400 transition-all duration-500" style="width: 0%;"></div>
+            </div>
+
+            <!-- Red Car Marker (Top Track) -->
+            <div id="minimap-p1-dot" class="absolute -top-1.5 -ml-3.5 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
+              <span class="text-sm sm:text-base drop-shadow" title="Pemain 1">🏎️</span>
+            </div>
+
+            <!-- Blue Car Marker (Bottom Track) -->
+            <div id="minimap-p2-dot" class="absolute -bottom-1.5 -ml-3.5 transition-all duration-500 flex flex-col items-center" style="left: 0%;">
+              <span class="text-sm sm:text-base drop-shadow" style="filter: hue-rotate(215deg) saturate(1.6);" title="Pemain 2">🏎️</span>
+            </div>
+          </div>
+
+          <!-- FINIS Flag Pill -->
+          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 border border-amber-400 text-[10px] sm:text-xs font-racing font-black text-amber-300 shrink-0">
+            <span>FINIS</span>
+            <span>🏁</span>
+          </div>
+        </div>
+
+        <!-- Pre-Race 3-2-1-GO Countdown Overlay -->
+        <div id="start-countdown-overlay" class="hidden absolute inset-0 flex items-center justify-center bg-slate-950/35 backdrop-blur-[2px]">
+          <div id="start-countdown-text" class="font-racing text-6xl sm:text-8xl font-black title-3d-gold animate-pop">
+            3
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 3. BOTTOM SPLIT QUESTION PANELS (CRISP WHITE CARDS WITH RED/BLUE)   -->
+    <!-- =================================================================== -->
+    <section id="quiz-panels-section" class="hidden w-full h-[46%] sm:h-[43%] bg-slate-900 p-1.5 sm:p-2.5 grid grid-cols-2 gap-1.5 sm:gap-3 overflow-hidden">
+
+      <!-- =============================================================== -->
+      <!-- PANEL PEMAIN 1 (LEFT — RED BORDER & CRISP WHITE CARD)           -->
+      <!-- =============================================================== -->
+      <div id="panel-p1" class="relative flex flex-col justify-between rounded-2xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-[3px] border-rose-600 shadow-[0_0_25px_rgba(225,29,72,0.45)] p-2 sm:p-3 overflow-y-auto text-slate-900">
+        <!-- Top Header Bar inside Card -->
+        <div class="flex items-center justify-between gap-1.5 pb-1.5 border-b border-slate-200">
+          <!-- Avatar + Red Name Pill -->
+          <div class="flex items-center gap-1.5 min-w-0">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-100 border-2 border-rose-500 flex items-center justify-center text-sm sm:text-base shrink-0">
+              🧑‍🚀
+            </div>
+            <div class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-red-600 text-white font-extrabold text-xs sm:text-sm truncate shadow-sm">
+              <span id="p1-panel-name">Pemain 1</span>
+            </div>
+          </div>
+
+          <!-- Category Pill + Question Counter + Independent Timer -->
+          <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <span id="p1-category-badge" class="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-purple-600 text-white text-[10px] font-bold">
+              Kategori
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-white text-[10px] sm:text-xs font-bold">
+              Soal <span id="p1-q-num">1</span>/<span class="p-q-total">20</span>
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[10px] sm:text-xs">
+              ⏱<span id="p1-timer">30</span>s
+            </span>
+          </div>
+        </div>
+
+        <!-- Thin Independent Timer Bar -->
+        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-1 shrink-0">
+          <div id="p1-timer-bar" class="h-full bg-rose-600 transition-all duration-200" style="width: 100%;"></div>
+        </div>
+
+        <!-- Question Text -->
+        <div class="my-auto py-1 px-1">
+          <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-0.5">
+            <span id="p1-category-mobile" class="md:hidden text-purple-700">IPAS</span>
+            <span id="p1-status-indicator" class="text-rose-600 ml-auto">Pilih jawaban yang benar!</span>
+          </div>
+          <p id="p1-question-text" class="text-xs sm:text-sm md:text-[15px] font-bold text-slate-900 leading-snug text-center">
+            Memuat pertanyaan IPAS...
+          </p>
+        </div>
+
+        <!-- 2x2 Options Grid (A, B, C, D) -->
+        <div id="p1-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-1">
+          <button type="button" data-player="1" data-option="A" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">A</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan A</span>
+          </button>
+          <button type="button" data-player="1" data-option="B" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">B</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan B</span>
+          </button>
+          <button type="button" data-player="1" data-option="C" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">C</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan C</span>
+          </button>
+          <button type="button" data-player="1" data-option="D" class="quiz-option-pill p1-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">D</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan D</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- =============================================================== -->
+      <!-- PANEL PEMAIN 2 (RIGHT — BLUE BORDER & CRISP WHITE CARD)         -->
+      <!-- =============================================================== -->
+      <div id="panel-p2" class="relative flex flex-col justify-between rounded-2xl sm:rounded-3xl bg-gradient-to-b from-white to-slate-100 border-[3px] border-blue-600 shadow-[0_0_25px_rgba(37,99,235,0.45)] p-2 sm:p-3 overflow-y-auto text-slate-900">
+        <!-- Top Header Bar inside Card -->
+        <div class="flex items-center justify-between gap-1.5 pb-1.5 border-b border-slate-200">
+          <!-- Avatar + Blue Name Pill -->
+          <div class="flex items-center gap-1.5 min-w-0">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-sm sm:text-base shrink-0">
+              🧑‍🚀
+            </div>
+            <div class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-sky-600 text-white font-extrabold text-xs sm:text-sm truncate shadow-sm">
+              <span id="p2-panel-name">Pemain 2</span>
+            </div>
+          </div>
+
+          <!-- Category Pill + Question Counter + Independent Timer -->
+          <div class="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <span id="p2-category-badge" class="hidden md:inline-block px-2.5 py-0.5 rounded-full bg-sky-600 text-white text-[10px] font-bold">
+              Kategori
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-white text-[10px] sm:text-xs font-bold">
+              Soal <span id="p2-q-num">1</span>/<span class="p-q-total">20</span>
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-400 text-amber-800 font-racing font-black text-[10px] sm:text-xs">
+              ⏱<span id="p2-timer">30</span>s
+            </span>
+          </div>
+        </div>
+
+        <!-- Thin Independent Timer Bar -->
+        <div class="w-full h-1 bg-slate-200 rounded-full overflow-hidden my-1 shrink-0">
+          <div id="p2-timer-bar" class="h-full bg-blue-600 transition-all duration-200" style="width: 100%;"></div>
+        </div>
+
+        <!-- Question Text -->
+        <div class="my-auto py-1 px-1">
+          <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-0.5">
+            <span id="p2-category-mobile" class="md:hidden text-blue-700">IPAS</span>
+            <span id="p2-status-indicator" class="text-blue-600 ml-auto">Pilih jawaban yang benar!</span>
+          </div>
+          <p id="p2-question-text" class="text-xs sm:text-sm md:text-[15px] font-bold text-slate-900 leading-snug text-center">
+            Memuat pertanyaan IPAS...
+          </p>
+        </div>
+
+        <!-- 2x2 Options Grid (A, B, C, D) -->
+        <div id="p2-options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-1">
+          <button type="button" data-player="2" data-option="A" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">A</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan A</span>
+          </button>
+          <button type="button" data-player="2" data-option="B" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">B</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan B</span>
+          </button>
+          <button type="button" data-player="2" data-option="C" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">C</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan C</span>
+          </button>
+          <button type="button" data-player="2" data-option="D" class="quiz-option-pill p2-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer">
+            <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0">D</span>
+            <span class="opt-text flex-1 leading-tight">Pilihan D</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 4. MODAL: PETUNJUK PERMAINAN (HOW TO PLAY)                            -->
+  <!-- ===================================================================== -->
+  <div id="modal-guide" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+    <div class="sci-frame w-full max-w-2xl rounded-3xl p-5 sm:p-7 max-h-[90vh] overflow-y-auto animate-pop">
+      <div class="flex items-center justify-between pb-3 border-b border-cyan-400/30">
+        <h2 class="font-racing text-lg sm:text-2xl font-black text-amber-300 flex items-center gap-2">
+          <span>📖</span> PETUNJUK PERMAINAN
+        </h2>
+        <button id="btn-close-guide" type="button" class="w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-bold transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-3 text-xs sm:text-sm text-slate-100 leading-relaxed">
+        <div class="p-3.5 rounded-2xl bg-sky-950/70 border border-sky-400/40">
+          <h3 class="font-bold text-amber-300 mb-1">🏁 Konsep Balapan Real-Time</h3>
+          <p>Kedua mobil balap terus melaju di lintasan sains yang sama! Jawab pertanyaan <strong>IPAS Kelas 6 Semester 1</strong> dengan cepat dan benar untuk mengaktifkan <strong>Turbo Boost</strong> dan melesat melewati garis finis lebih dulu.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-2xl bg-emerald-950/60 border border-emerald-400/40">
+            <h4 class="font-bold text-emerald-300 mb-1">✅ Jawaban Benar</h4>
+            <p>Mobil langsung melaju maju <strong>+1 langkah</strong> dengan semburan turbo tanpa menunggu lawan.</p>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-rose-950/60 border border-rose-400/40">
+            <h4 class="font-bold text-rose-300 mb-1">❌ Jawaban Salah / Waktu Habis</h4>
+            <p>Mobil tetap berjalan menjaga kecepatan tanpa menambah langkah (tidak mundur). Batas waktu per soal adalah 30 detik.</p>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-white/15">
+          <h3 class="font-bold text-cyan-300 mb-1.5">🎮 Kontrol 2 Pemain Bersamaan</h3>
+          <ul class="list-disc list-inside space-y-1 text-slate-200">
+            <li><strong>Layar Sentuh (IFP / Tablet) &amp; Mouse:</strong> Sentuh langsung pilihan <strong>A, B, C, D</strong> pada panel masing-masing.</li>
+            <li><strong>Keyboard PC/Laptop:</strong>
+              <br/>• <strong>Pemain 1 (Merah):</strong> Tombol <code class="px-1.5 py-0.5 bg-rose-900 rounded text-white">1</code> <code class="px-1.5 py-0.5 bg-rose-900 rounded text-white">2</code> <code class="px-1.5 py-0.5 bg-rose-900 rounded text-white">3</code> <code class="px-1.5 py-0.5 bg-rose-900 rounded text-white">4</code> (atau Q, W, E, R).
+              <br/>• <strong>Pemain 2 (Biru):</strong> Tombol <code class="px-1.5 py-0.5 bg-blue-900 rounded text-white">7</code> <code class="px-1.5 py-0.5 bg-blue-900 rounded text-white">8</code> <code class="px-1.5 py-0.5 bg-blue-900 rounded text-white">9</code> <code class="px-1.5 py-0.5 bg-blue-900 rounded text-white">0</code> (atau U, I, O, P).
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-5 flex justify-end">
+        <button id="btn-ok-guide" type="button" class="btn-gold-arcade px-6 py-2.5 rounded-2xl font-racing font-black text-sm cursor-pointer">
+          SIAP BERLOMBA!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 5. MODAL: TEACHER PASSWORD GATE                                       -->
+  <!-- ===================================================================== -->
+  <div id="modal-password" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4">
+    <div class="sci-frame w-full max-w-md rounded-3xl p-6 animate-pop">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-racing text-lg font-black text-cyan-300 flex items-center gap-2">
+          <span>🔐</span> PENGATURAN GURU
+        </h2>
+        <button id="btn-close-password" type="button" class="w-8 h-8 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-bold cursor-pointer">
+          ✕
+        </button>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-200 mb-4">
+        Masukkan kata sandi guru untuk membuka dashboard pengelolaan bank soal dan pengaturan balapan.
+      </p>
+
+      <form id="form-teacher-password" class="space-y-3">
+        <div>
+          <label for="input-teacher-password" class="block text-xs font-bold uppercase tracking-wider text-cyan-200 mb-1">
+            Password Guru
+          </label>
+          <input id="input-teacher-password" type="password" autocomplete="off" placeholder="Masukkan password..."
+            class="w-full bg-slate-900 border-2 border-cyan-400/60 focus:border-amber-400 rounded-xl px-4 py-2.5 text-sm font-bold text-white outline-none" />
+        </div>
+
+        <p id="password-error-msg" class="hidden text-xs font-bold text-rose-200 bg-rose-600/80 border border-rose-300 px-3 py-2 rounded-xl">
+          Password tidak sesuai. Silakan coba kembali.
+        </p>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button id="btn-cancel-password" type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm font-bold text-slate-200 cursor-pointer">
+            Batal
+          </button>
+          <button type="submit" class="btn-gold-arcade px-5 py-2 rounded-xl font-racing font-black text-xs sm:text-sm cursor-pointer">
+            BUKA DASHBOARD
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 6. MODAL: TEACHER SETTINGS DASHBOARD (MATCHING BOTTOM-LEFT MOCKUP)    -->
+  <!-- ===================================================================== -->
+  <div id="modal-teacher-dashboard" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-950/90 backdrop-blur-lg p-2 sm:p-4">
+    <div class="sci-frame w-full max-w-6xl h-[93vh] rounded-3xl flex flex-col overflow-hidden">
+      <!-- Metallic Blue Top Header Bar -->
+      <div class="px-4 sm:px-6 py-3 bg-gradient-to-r from-sky-800 via-blue-900 to-slate-900 border-b-2 border-cyan-400/60 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl sm:text-2xl text-cyan-300">⚙️</span>
+          <h2 class="font-racing text-base sm:text-xl font-black text-white tracking-wide">
+            PENGATURAN GURU
+          </h2>
+        </div>
+        <span class="hidden sm:inline-block text-xs font-semibold text-cyan-200">
+          Bank Soal IPAS Kelas 6 SD Semester 1
+        </span>
+      </div>
+
+      <!-- 2-Column Body: Left Sidebar + Right Crisp White Content Card -->
+      <div class="flex-1 flex flex-col md:flex-row overflow-hidden p-2.5 sm:p-4 gap-3 sm:gap-4">
+
+        <!-- Left Navigation Sidebar (Matches Screenshot Left Menu) -->
+        <aside class="w-full md:w-64 shrink-0 flex flex-row md:flex-col justify-between gap-2 overflow-x-auto md:overflow-visible">
+          <div class="flex flex-row md:flex-col gap-2 flex-1">
+            <button type="button" data-tab="tab-edit-questions"
+              class="teacher-tab active flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-sky-500 to-cyan-500 text-white border-2 border-cyan-200 shadow-lg whitespace-nowrap cursor-pointer">
+              <span>📝</span>
+              <span>Edit Soal</span>
+            </button>
+
+            <button type="button" data-tab="tab-download-template"
+              class="teacher-tab flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-sky-500/40 whitespace-nowrap cursor-pointer">
+              <span>📥</span>
+              <span>Download Template</span>
+            </button>
+
+            <button type="button" data-tab="tab-upload-template"
+              class="teacher-tab flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-sky-500/40 whitespace-nowrap cursor-pointer">
+              <span>📤</span>
+              <span>Upload Template</span>
+            </button>
+
+            <button type="button" data-tab="tab-game-settings"
+              class="teacher-tab flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-sky-500/40 whitespace-nowrap cursor-pointer">
+              <span>⚙️</span>
+              <span>Pengaturan Permainan</span>
+            </button>
+          </div>
+
+          <button id="btn-teacher-back-game" type="button"
+            class="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-b from-rose-500 to-red-700 hover:brightness-110 border-2 border-rose-300 text-white font-extrabold text-xs sm:text-sm shadow-lg whitespace-nowrap cursor-pointer">
+            <span>🏠</span>
+            <span>Kembali ke Menu Utama</span>
+          </button>
+        </aside>
+
+        <!-- Right White Card Content Area -->
+        <main class="flex-1 bg-white text-slate-900 rounded-2xl border-2 border-sky-300 shadow-xl overflow-y-auto p-3.5 sm:p-5">
+
+          <!-- ============================================================= -->
+          <!-- TAB A: EDIT SOAL (TABLE STYLE MATCHING SCREENSHOT)            -->
+          <!-- ============================================================= -->
+          <div id="tab-edit-questions" class="teacher-tab-pane space-y-4">
+            <!-- Top Action Bar: Title + "+ Tambah Soal" + "Filter Kategori" -->
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <div class="flex items-center gap-2">
+                <span class="text-lg">✏️</span>
+                <h3 class="text-base sm:text-lg font-black text-slate-800">
+                  Edit Soal (<span id="tab-q-count">20</span>)
+                </h3>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button id="btn-add-new-question" type="button"
+                  class="px-3.5 py-2 rounded-xl bg-gradient-to-b from-emerald-500 to-green-600 hover:brightness-105 text-white font-extrabold text-xs sm:text-sm shadow flex items-center gap-1.5 cursor-pointer">
+                  <span>+</span>
+                  <span>Tambah Soal</span>
+                </button>
+
+                <select id="select-category-filter"
+                  class="px-3 py-2 rounded-xl bg-gradient-to-b from-sky-500 to-blue-600 text-white font-extrabold text-xs sm:text-sm shadow outline-none cursor-pointer">
+                  <option value="ALL" class="text-slate-900 bg-white">Filter Kategori: Semua</option>
+                  <option value="Sistem Pencernaan" class="text-slate-900 bg-white">Sistem Pencernaan</option>
+                  <option value="Sistem Pernapasan" class="text-slate-900 bg-white">Sistem Pernapasan</option>
+                  <option value="Sistem Tata Surya" class="text-slate-900 bg-white">Sistem Tata Surya</option>
+                  <option value="Jejak Pahlawan" class="text-slate-900 bg-white">Jejak Pahlawan</option>
+                </select>
+
+                <button id="btn-reset-default-questions" type="button" title="Kembalikan 20 Soal Bawaan"
+                  class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-400 text-amber-900 font-bold text-xs cursor-pointer">
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- Category Composition Quotas -->
+            <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold text-slate-700">Komposisi Jumlah Soal per Kategori dalam Balapan:</span>
+                <span id="quota-summary-badge" class="text-xs font-extrabold text-blue-700">Total Aktif: 20 Soal</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <div class="bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+                  <span class="font-bold text-slate-700">Pencernaan</span>
+                  <input id="quota-pencernaan" type="number" min="0" max="50" value="5" class="quota-input w-12 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-center font-extrabold text-slate-900" />
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+                  <span class="font-bold text-slate-700">Pernapasan</span>
+                  <input id="quota-pernapasan" type="number" min="0" max="50" value="5" class="quota-input w-12 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-center font-extrabold text-slate-900" />
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+                  <span class="font-bold text-slate-700">Tata Surya</span>
+                  <input id="quota-tatasurya" type="number" min="0" max="50" value="5" class="quota-input w-12 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-center font-extrabold text-slate-900" />
+                </div>
+                <div class="bg-white p-2 rounded-lg border border-slate-200 flex items-center justify-between">
+                  <span class="font-bold text-slate-700">Pahlawan</span>
+                  <input id="quota-pahlawan" type="number" min="0" max="50" value="5" class="quota-input w-12 bg-slate-100 border border-slate-300 rounded px-1.5 py-0.5 text-center font-extrabold text-slate-900" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Inline Question Editor Card -->
+            <div id="question-editor-card" class="hidden bg-sky-50 border-2 border-sky-400 rounded-2xl p-4 space-y-3 animate-pop">
+              <div class="flex items-center justify-between">
+                <h4 id="editor-form-title" class="font-racing text-sm font-black text-blue-800">Tambah Soal Baru</h4>
+                <button id="btn-cancel-edit-q" type="button" class="text-xs font-bold text-slate-500 hover:text-rose-600 cursor-pointer">✕ Tutup</button>
+              </div>
+              <input type="hidden" id="edit-q-index" value="-1" />
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Materi</label>
+                  <select id="edit-q-category" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-bold text-slate-900">
+                    <option value="Sistem Pencernaan">Sistem Pencernaan</option>
+                    <option value="Sistem Pernapasan">Sistem Pernapasan</option>
+                    <option value="Sistem Tata Surya">Sistem Tata Surya</option>
+                    <option value="Jejak Pahlawan">Jejak Pahlawan</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Tingkat Kesulitan</label>
+                  <select id="edit-q-difficulty" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm font-bold text-slate-900">
+                    <option value="Mudah">Mudah</option>
+                    <option value="Sedang">Sedang</option>
+                    <option value="Sulit">Sulit</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Kunci Jawaban</label>
+                  <select id="edit-q-answer" class="w-full bg-emerald-50 border border-emerald-400 rounded-xl px-3 py-2 text-xs sm:text-sm font-extrabold text-emerald-800">
+                    <option value="A">Pilihan A</option>
+                    <option value="B">Pilihan B</option>
+                    <option value="C">Pilihan C</option>
+                    <option value="D">Pilihan D</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Pertanyaan</label>
+                <textarea id="edit-q-text" rows="2" placeholder="Tuliskan pertanyaan IPAS kelas 6..."
+                  class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900"></textarea>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-0.5">Pilihan A</label>
+                  <input id="edit-q-optA" type="text" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-0.5">Pilihan B</label>
+                  <input id="edit-q-optB" type="text" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-0.5">Pilihan C</label>
+                  <input id="edit-q-optC" type="text" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-0.5">Pilihan D</label>
+                  <input id="edit-q-optD" type="text" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-slate-900" />
+                </div>
+              </div>
+
+              <div class="flex justify-end">
+                <button id="btn-save-question" type="button" class="btn-blue-arcade px-5 py-2 rounded-xl font-racing font-bold text-xs sm:text-sm cursor-pointer">
+                  SIMPAN SOAL
+                </button>
+              </div>
+            </div>
+
+            <!-- Question Table (Matches No. | Kategori | Pertanyaan | Aksi) -->
+            <div class="overflow-x-auto rounded-2xl border border-slate-200">
+              <table class="w-full text-left text-xs sm:text-sm">
+                <thead class="bg-slate-100 text-slate-800 font-extrabold border-b border-slate-200">
+                  <tr>
+                    <th class="p-3 w-12 text-center">No.</th>
+                    <th class="p-3 w-44">Kategori</th>
+                    <th class="p-3">Pertanyaan &amp; Kunci</th>
+                    <th class="p-3 w-36 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="teacher-question-tbody" class="divide-y divide-slate-200 bg-white">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ============================================================= -->
+          <!-- TAB B: DOWNLOAD TEMPLATE EXCEL                                -->
+          <!-- ============================================================= -->
+          <div id="tab-download-template" class="teacher-tab-pane hidden space-y-4">
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+              <span>📥</span> Download Template Soal Excel (.xlsx)
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Unduh file template Excel resmi yang sudah dilengkapi contoh soal untuk keempat kategori IPAS Kelas 6 SD serta petunjuk pengisiannya.
+            </p>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-300">
+              <table class="w-full text-left text-xs text-slate-800">
+                <thead class="bg-slate-800 text-white font-bold">
+                  <tr>
+                    <th class="p-2">No</th>
+                    <th class="p-2">Kategori</th>
+                    <th class="p-2">Pertanyaan</th>
+                    <th class="p-2">Pilihan A</th>
+                    <th class="p-2">Pilihan B</th>
+                    <th class="p-2">Pilihan C</th>
+                    <th class="p-2">Pilihan D</th>
+                    <th class="p-2">Kunci Jawaban</th>
+                    <th class="p-2">Tingkat Kesulitan</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-slate-50">
+                  <tr>
+                    <td class="p-2">1</td>
+                    <td class="p-2 font-bold text-amber-700">Sistem Pencernaan</td>
+                    <td class="p-2">Pertanyaan...</td>
+                    <td class="p-2">Jawaban A</td>
+                    <td class="p-2">Jawaban B</td>
+                    <td class="p-2">Jawaban C</td>
+                    <td class="p-2">Jawaban D</td>
+                    <td class="p-2 font-bold">A</td>
+                    <td class="p-2">Mudah</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2">2</td>
+                    <td class="p-2 font-bold text-sky-700">Sistem Pernapasan</td>
+                    <td class="p-2">Pertanyaan...</td>
+                    <td class="p-2">Jawaban A</td>
+                    <td class="p-2">Jawaban B</td>
+                    <td class="p-2">Jawaban C</td>
+                    <td class="p-2">Jawaban D</td>
+                    <td class="p-2 font-bold">B</td>
+                    <td class="p-2">Sedang</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2">3</td>
+                    <td class="p-2 font-bold text-indigo-700">Sistem Tata Surya</td>
+                    <td class="p-2">Pertanyaan...</td>
+                    <td class="p-2">Jawaban A</td>
+                    <td class="p-2">Jawaban B</td>
+                    <td class="p-2">Jawaban C</td>
+                    <td class="p-2">Jawaban D</td>
+                    <td class="p-2 font-bold">C</td>
+                    <td class="p-2">Sulit</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2">4</td>
+                    <td class="p-2 font-bold text-rose-700">Jejak Pahlawan</td>
+                    <td class="p-2">Pertanyaan...</td>
+                    <td class="p-2">Jawaban A</td>
+                    <td class="p-2">Jawaban B</td>
+                    <td class="p-2">Jawaban C</td>
+                    <td class="p-2">Jawaban D</td>
+                    <td class="p-2 font-bold">D</td>
+                    <td class="p-2">Mudah</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button id="btn-download-template-xlsx" type="button"
+                class="btn-blue-arcade px-5 py-3 rounded-2xl font-racing font-bold text-xs sm:text-sm cursor-pointer">
+                ⬇️ DOWNLOAD TEMPLATE (.XLSX)
+              </button>
+              <button id="btn-export-current-xlsx" type="button"
+                class="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-racing font-bold text-xs sm:text-sm shadow cursor-pointer">
+                📤 EXPORT BANK SOAL AKTIF
+              </button>
+            </div>
+          </div>
+
+          <!-- ============================================================= -->
+          <!-- TAB C: UPLOAD TEMPLATE EXCEL                                  -->
+          <!-- ============================================================= -->
+          <div id="tab-upload-template" class="teacher-tab-pane hidden space-y-4">
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+              <span>📤</span> Upload Template Soal Excel (.xlsx)
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-600">
+              Pilih file Excel (<code class="font-bold text-blue-700">.xlsx</code>) yang telah diisi. Sistem akan memeriksa kelengkapan kolom, kategori materi, pilihan A-D, dan kunci jawaban sebelum disimpan.
+            </p>
+
+            <label for="input-upload-xlsx"
+              class="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-sky-400 hover:border-blue-600 rounded-2xl bg-sky-50/70 hover:bg-sky-100/70 transition cursor-pointer">
+              <span class="text-3xl mb-1">📄</span>
+              <span class="text-sm font-extrabold text-slate-800">Klik di sini untuk memilih file Excel (.xlsx)</span>
+              <span class="text-xs text-slate-500 mt-1">Mendukung format .xlsx dan .xls</span>
+              <input id="input-upload-xlsx" type="file" accept=".xlsx,.xls" class="hidden" />
+            </label>
+
+            <div id="upload-validation-box" class="hidden p-4 rounded-2xl border text-xs"></div>
+
+            <div id="upload-preview-section" class="hidden space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-extrabold text-sm text-emerald-700">
+                  Preview Soal Valid (<span id="upload-valid-count">0</span> soal):
+                </span>
+                <div class="flex flex-wrap gap-2">
+                  <button id="btn-import-append" type="button"
+                    class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs cursor-pointer">
+                    + Tambahkan ke Bank Soal
+                  </button>
+                  <button id="btn-import-replace" type="button"
+                    class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs cursor-pointer">
+                    🔄 Ganti Bank Soal Lama
+                  </button>
+                </div>
+              </div>
+
+              <div class="max-h-60 overflow-y-auto rounded-xl border border-slate-300">
+                <table class="w-full text-left text-xs text-slate-800">
+                  <thead class="bg-slate-100 font-bold sticky top-0">
+                    <tr>
+                      <th class="p-2">No</th>
+                      <th class="p-2">Kategori</th>
+                      <th class="p-2">Pertanyaan</th>
+                      <th class="p-2">Kunci</th>
+                      <th class="p-2">Kesulitan</th>
+                    </tr>
+                  </thead>
+                  <tbody id="upload-preview-tbody" class="divide-y divide-slate-200"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================================= -->
+          <!-- TAB D: PENGATURAN PERMAINAN                                   -->
+          <!-- ============================================================= -->
+          <div id="tab-game-settings" class="teacher-tab-pane hidden space-y-4">
+            <h3 class="text-lg font-black text-slate-800 flex items-center gap-2">
+              <span>🏎️</span> Pengaturan Permainan &amp; Arena Balap
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 space-y-2.5">
+                <h4 class="font-extrabold text-sm text-rose-700">Pemain 1</h4>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Nama Pemain 1</label>
+                  <input id="set-p1-name" type="text" maxlength="16" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Warna Mobil 3D Pemain 1</label>
+                  <input id="set-p1-color" type="color" value="#ef4444" class="w-14 h-9 rounded-lg border border-slate-300 cursor-pointer" />
+                </div>
+              </div>
+
+              <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-2.5">
+                <h4 class="font-extrabold text-sm text-blue-700">Pemain 2</h4>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Nama Pemain 2</label>
+                  <input id="set-p2-name" type="text" maxlength="16" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-900" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">Warna Mobil 3D Pemain 2</label>
+                  <input id="set-p2-color" type="color" value="#3b82f6" class="w-14 h-9 rounded-lg border border-slate-300 cursor-pointer" />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Durasi Soal (Detik)</label>
+                <input id="set-timer-seconds" type="number" min="10" max="120" value="30" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-extrabold" />
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Soal</label>
+                <input id="set-question-count" type="number" min="4" max="50" value="20" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-extrabold" />
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Panjang Lintasan</label>
+                <input id="set-track-length" type="number" min="5" max="30" value="12" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-extrabold" />
+              </div>
+              <div class="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Kecepatan Mobil</label>
+                <select id="set-anim-speed" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm font-extrabold">
+                  <option value="0.85">Normal</option>
+                  <option value="1.25" selected>Cepat</option>
+                  <option value="1.8">Turbo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label class="flex items-center justify-between p-3 rounded-xl bg-slate-100 border border-slate-200 cursor-pointer">
+                <span class="text-xs sm:text-sm font-bold text-slate-800">🎵 Musik Latar Balapan</span>
+                <input id="set-music-enabled" type="checkbox" checked class="w-5 h-5 accent-blue-600 cursor-pointer" />
+              </label>
+              <label class="flex items-center justify-between p-3 rounded-xl bg-slate-100 border border-slate-200 cursor-pointer">
+                <span class="text-xs sm:text-sm font-bold text-slate-800">🔊 Efek Suara Mesin &amp; Kuis</span>
+                <input id="set-sfx-enabled" type="checkbox" checked class="w-5 h-5 accent-blue-600 cursor-pointer" />
+              </label>
+            </div>
+
+            <div class="flex justify-end pt-2">
+              <button id="btn-save-settings" type="button" class="btn-gold-arcade px-6 py-3 rounded-2xl font-racing font-black text-xs sm:text-sm cursor-pointer">
+                💾 SIMPAN PENGATURAN
+              </button>
+            </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 7. MODAL: FINAL RESULTS / WINNER SCREEN (MATCHING BOTTOM-RIGHT ART)   -->
+  <!-- ===================================================================== -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <div id="modal-results" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-slate-950/75 backdrop-blur-sm p-2 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-5xl rounded-3xl bg-gradient-to-b from-sky-900/95 via-slate-900/95 to-slate-950/95 border-2 border-amber-400/75 shadow-[0_0_50px_rgba(251,191,36,0.45)] p-3.5 sm:p-6 max-h-[95vh] overflow-y-auto animate-pop">
+
+      <!-- TOP WINNER BANNER + CARTOON RACER CHARACTERS -->
+      <div class="relative flex items-center justify-between gap-2 pb-3">
+        <!-- Left Cartoon Racer Character (Red Suit Cheering) -->
+        <div class="hidden sm:flex flex-col items-center w-28 shrink-0">
+          <svg class="w-24 h-24 drop-shadow-xl" viewBox="0 0 100 100">
+            <circle cx="50" cy="36" r="20" fill="#fed7aa" stroke="#7c2d12" stroke-width="2.5" />
+            <path d="M30 32 C32 14, 68 14, 70 32 C64 24, 36 24, 30 32 Z" fill="#451a03" />
+            <circle cx="43" cy="36" r="2.8" fill="#0f172a" />
+            <circle cx="57" cy="36" r="2.8" fill="#0f172a" />
+            <path d="M43 44 Q50 51 57 44" stroke="#9a3412" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            <path d="M28 60 L72 60 L78 95 L22 95 Z" fill="#ef4444" stroke="#ffffff" stroke-width="2.5" />
+            <path d="M45 60 L55 60 L55 95 L45 95 Z" fill="#ffffff" />
+            <circle cx="20" cy="44" r="8" fill="#fed7aa" stroke="#7c2d12" stroke-width="2" />
+          </svg>
+        </div>
+
+        <!-- Center Laurel Wreath + Crown + Metallic Gold WINNER Title -->
+        <div class="flex-1 text-center">
+          <div class="inline-flex items-center justify-center gap-2">
+            <span class="text-2xl sm:text-4xl">🌿</span>
+            <div>
+              <div class="text-xl sm:text-2xl -mb-1">👑</div>
+              <h2 id="result-badge-pill" class="font-racing text-3xl sm:text-5xl md:text-6xl font-black tracking-wider title-3d-gold">
+                WINNER
+              </h2>
+            </div>
+            <span class="text-2xl sm:text-4xl scale-x-[-1]">🌿</span>
+          </div>
+          <div class="mt-1 inline-block px-6 py-1 rounded-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 border-2 border-yellow-200 shadow-lg">
+            <span id="result-winner-title" class="font-racing text-sm sm:text-xl font-black text-slate-950">
+              Pemain 1
+            </span>
+          </div>
+          <p id="result-winner-subtitle" class="mt-1 text-[11px] sm:text-xs text-cyan-200 font-semibold">
+            Melintasi garis finis tercepat!
+          </p>
+        </div>
+
+        <!-- Right Cartoon Racer Character (Blue Suit) -->
+        <div class="hidden sm:flex flex-col items-center w-28 shrink-0">
+          <svg class="w-24 h-24 drop-shadow-xl" viewBox="0 0 100 100">
+            <circle cx="50" cy="36" r="20" fill="#fed7aa" stroke="#1e3a8a" stroke-width="2.5" />
+            <path d="M30 32 C32 14, 68 14, 70 32 C64 24, 36 24, 30 32 Z" fill="#1e293b" />
+            <circle cx="43" cy="36" r="2.8" fill="#0f172a" />
+            <circle cx="57" cy="36" r="2.8" fill="#0f172a" />
+            <path d="M44 44 Q50 49 56 44" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+            <path d="M28 60 L72 60 L78 95 L22 95 Z" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" />
+            <path d="M45 60 L55 60 L55 95 L45 95 Z" fill="#ffffff" />
+            <circle cx="80" cy="48" r="8" fill="#fed7aa" stroke="#1e3a8a" stroke-width="2" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- 3-COLUMN RESULTS GRID (MATCHING BOTTOM-RIGHT SCREENSHOT) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 my-2 text-slate-900">
+
+        <!-- COLUMN 1: PEMAIN 1 WHITE STATS CARD (4 Cols) -->
+        <div class="lg:col-span-4 rounded-2xl bg-white border-[3px] border-rose-600 shadow-xl overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-rose-600 to-red-600 px-4 py-2 flex items-center justify-between text-white">
+            <span id="res-p1-name" class="font-extrabold text-sm sm:text-base truncate">Pemain 1</span>
+            <span id="res-p1-rank" class="px-2 py-0.5 rounded bg-black/25 font-racing text-[10px] font-bold">JUARA 1</span>
+          </div>
+          <div class="p-3 space-y-2 text-xs sm:text-sm font-bold flex-1">
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-emerald-600">✅</span> Jawaban Benar</span>
+              <span id="res-p1-correct" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-rose-600">❌</span> Jawaban Salah</span>
+              <span id="res-p1-wrong" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-amber-500">🎯</span> Persentase</span>
+              <span id="res-p1-accuracy" class="font-racing font-black text-slate-900">0%</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-rose-600">🏎️</span> Total Langkah</span>
+              <span id="res-p1-steps" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-sky-600">⏱️</span> Waktu Penyelesaian</span>
+              <span id="res-p1-time" class="font-racing font-black text-slate-900">00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: REKAP HASIL PER KATEGORI (4 Cols) -->
+        <div class="lg:col-span-4 rounded-2xl bg-white border-[3px] border-sky-500 shadow-xl overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-blue-900 via-sky-700 to-blue-900 px-3 py-2 text-center text-white font-extrabold text-sm sm:text-base">
+            Rekap Hasil per Kategori
+          </div>
+          <div class="flex-1 flex flex-col justify-between">
+            <table class="w-full text-xs sm:text-sm">
+              <thead class="bg-slate-800 text-white font-bold">
+                <tr>
+                  <th class="py-1.5 px-2.5 text-left">Kategori</th>
+                  <th class="py-1.5 px-2 text-center bg-rose-600">P1</th>
+                  <th class="py-1.5 px-2 text-center bg-blue-600">P2</th>
+                </tr>
+              </thead>
+              <tbody id="result-category-tbody" class="divide-y divide-slate-200 font-bold text-slate-800">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- COLUMN 3: PEMAIN 2 WHITE STATS CARD (4 Cols) -->
+        <div class="lg:col-span-4 rounded-2xl bg-white border-[3px] border-blue-600 shadow-xl overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-blue-600 to-sky-600 px-4 py-2 flex items-center justify-between text-white">
+            <span id="res-p2-name" class="font-extrabold text-sm sm:text-base truncate">Pemain 2</span>
+            <span id="res-p2-rank" class="px-2 py-0.5 rounded bg-black/25 font-racing text-[10px] font-bold">POSISI 2</span>
+          </div>
+          <div class="p-3 space-y-2 text-xs sm:text-sm font-bold flex-1">
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-emerald-600">✅</span> Jawaban Benar</span>
+              <span id="res-p2-correct" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-rose-600">❌</span> Jawaban Salah</span>
+              <span id="res-p2-wrong" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-amber-500">🎯</span> Persentase</span>
+              <span id="res-p2-accuracy" class="font-racing font-black text-slate-900">0%</span>
+            </div>
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-blue-600">🏎️</span> Total Langkah</span>
+              <span id="res-p2-steps" class="font-racing font-black text-slate-900">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-700 flex items-center gap-1.5"><span class="text-sky-600">⏱️</span> Waktu Penyelesaian</span>
+              <span id="res-p2-time" class="font-racing font-black text-slate-900">00:00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOTTOM ARCADE ACTION BUTTONS -->
+      <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button id="btn-play-again" type="button"
+          class="btn-gold-arcade w-full sm:w-auto px-8 py-3 rounded-2xl font-racing font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+          <span>🔄</span>
+          <span>MAIN LAGI</span>
+        </button>
+        <button id="btn-result-home" type="button"
+          class="btn-blue-arcade w-full sm:w-auto px-7 py-3 rounded-2xl font-racing font-bold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <span>🏠</span>
+          <span>KEMBALI KE MENU UTAMA</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 8. CUSTOM NON-BLOCKING TOAST NOTIFICATION BAR                         -->
+  <!-- ===================================================================== -->
+  <div id="global-toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-slate-900/95 border-2 border-cyan-400 text-xs sm:text-sm font-bold text-white shadow-2xl animate-pop">
+    Notifikasi Sistem
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT ARCHITECTURE                                               -->
+  <!-- ===================================================================== -->
+  <script>
+    "use strict";
+
+    /* =========================================================================
+       MODULE 1: BANK SOAL IPAS KELAS 6 SEMESTER 1 (20 SOAL KURIKULUM MERDEKA)
+       ========================================================================= */
+    const CATEGORIES = [
+      "Sistem Pencernaan",
+      "Sistem Pernapasan",
+      "Sistem Tata Surya",
+      "Jejak Pahlawan"
+    ];
+
+    const CATEGORY_ICONS = {
+      "Sistem Pencernaan": "🟠",
+      "Sistem Pernapasan": "🫁",
+      "Sistem Tata Surya": "🪐",
+      "Jejak Pahlawan": "🇮🇩"
+    };
+
+    const DEFAULT_QUESTIONS = [
+      // --- A. SISTEM PENCERNAAN MANUSIA (5 SOAL) ---
+      {
+        id: "q-1",
+        category: "Sistem Pencernaan",
+        difficulty: "Mudah",
+        question: "Saat mengunyah nasi putih cukup lama di dalam mulut, lama-kelamaan nasi terasa agak manis. Hal ini terjadi karena air liur mengandung enzim ptialin yang berfungsi mengubah...",
+        options: {
+          A: "Zat tepung (amilum) menjadi zat gula (maltosa)",
+          B: "Protein menjadi asam amino sederhana",
+          C: "Lemak menjadi asam lemak dan gliserol",
+          D: "Vitamin menjadi energi panas tubuh"
+        },
+        answer: "A"
+      },
+      {
+        id: "q-2",
+        category: "Sistem Pencernaan",
+        difficulty: "Sedang",
+        question: "Permukaan dinding dalam usus halus memiliki banyak lipatan dan jonjot usus (vili) yang kaya pembuluh darah. Struktur tersebut bertujuan untuk...",
+        options: {
+          A: "Menghancurkan makanan keras secara mekanis",
+          B: "Memperluas bidang penyerapan sari-sari makanan ke dalam darah",
+          C: "Membusukkan sisa makanan dengan bantuan bakteri baik",
+          D: "Menghasilkan asam klorida untuk membunuh kuman"
+        },
+        answer: "B"
+      },
+      {
+        id: "q-3",
+        category: "Sistem Pencernaan",
+        difficulty: "Sedang",
+        question: "Di dalam lambung terdapat cairan asam klorida (HCl) dan enzim pepsin. Peran penting asam klorida dalam proses pencernaan makanan adalah...",
+        options: {
+          A: "Menyerap seluruh air dari sisa makanan",
+          B: "Mendorong makanan turun menuju kerongkongan",
+          C: "Membunuh bibit penyakit yang terbawa makanan dan mengasamkan lambung",
+          D: "Mengubah lemak menjadi butiran-butiran halus"
+        },
+        answer: "C"
+      },
+      {
+        id: "q-4",
+        category: "Sistem Pencernaan",
+        difficulty: "Mudah",
+        question: "Apabila sisa makanan bergerak terlalu cepat melewati usus besar sehingga penyerapan air tidak maksimal, gangguan pencernaan yang akan dialami seseorang adalah...",
+        options: {
+          A: "Sembelit (konstipasi)",
+          B: "Sariawan pada rongga mulut",
+          C: "Radang usus buntu",
+          D: "Diare (feses menjadi encer)"
+        },
+        answer: "D"
+      },
+      {
+        id: "q-5",
+        category: "Sistem Pencernaan",
+        difficulty: "Sulit",
+        question: "Rani sering terlambat sarapan dan gemar mengonsumsi jajanan yang sangat pedas serta asam. Akibatnya, ia sering merasa perih dan mual di bagian ulu hati. Gangguan ini terjadi karena...",
+        options: {
+          A: "Dinding lambung mengalami iritasi akibat peningkatan asam lambung (maag)",
+          B: "Usus halus tidak mampu menghasilkan empedu",
+          C: "Kerongkongan berhenti melakukan gerak peristaltik",
+          D: "Enzim amilase berhenti diproduksi oleh kelenjar ludah"
+        },
+        answer: "A"
+      },
+
+      // --- B. SISTEM PERNAPASAN MANUSIA (5 SOAL) ---
+      {
+        id: "q-6",
+        category: "Sistem Pernapasan",
+        difficulty: "Mudah",
+        question: "Urutan jalannya udara pernapasan yang benar saat kita menarik napas (inspirasi) dari luar tubuh hingga mencapai tempat pertukaran gas adalah...",
+        options: {
+          A: "Hidung → Trakea → Laring → Faring → Alveolus → Bronkus",
+          B: "Hidung → Faring → Laring → Trakea → Bronkus → Bronkiolus → Alveolus",
+          C: "Hidung → Bronkus → Trakea → Faring → Laring → Alveolus",
+          D: "Hidung → Faring → Trakea → Alveolus → Bronkus → Bronkiolus"
+        },
+        answer: "B"
+      },
+      {
+        id: "q-7",
+        category: "Sistem Pernapasan",
+        difficulty: "Sedang",
+        question: "Di ujung saluran pernapasan terdapat gelembung-gelembung halus bernama alveolus yang dikelilingi kapiler darah. Proses penting yang berlangsung di alveolus adalah...",
+        options: {
+          A: "Penyaringan debu halus menggunakan silia dan lendir",
+          B: "Pengaturan suhu udara agar sesuai suhu tubuh",
+          C: "Pertukaran gas oksigen (O₂) ke darah dan pelepasan karbon dioksida (CO₂)",
+          D: "Penghasilan suara melalui getaran pita suara"
+        },
+        answer: "C"
+      },
+      {
+        id: "q-8",
+        category: "Sistem Pernapasan",
+        difficulty: "Sedang",
+        question: "Pada mekanisme pernapasan perut, udara luar dapat masuk ke dalam paru-paru ketika...",
+        options: {
+          A: "Otot diafragma relaksasi dan melengkung ke atas sehingga paru-paru mengecil",
+          B: "Tulang rusuk turun sehingga tekanan udara di rongga dada membesar",
+          C: "Paru-paru mengempis sehingga udara terdorong keluar",
+          D: "Otot diafragma berkontraksi dan mendatar sehingga rongga dada membesar"
+        },
+        answer: "D"
+      },
+      {
+        id: "q-9",
+        category: "Sistem Pernapasan",
+        difficulty: "Mudah",
+        question: "Bernapas melalui hidung jauh lebih sehat dibandingkan bernapas melalui mulut karena di dalam rongga hidung terdapat rambut-rambut halus dan selaput lendir yang berfungsi untuk...",
+        options: {
+          A: "Menyaring kotoran, menghangatkan, dan melembapkan udara yang masuk",
+          B: "Mengubah karbon dioksida menjadi oksigen bersih",
+          C: "Mempercepat denyut jantung saat berolahraga",
+          D: "Menyimpan cadangan oksigen saat berada di dalam air"
+        },
+        answer: "A"
+      },
+      {
+        id: "q-10",
+        category: "Sistem Pernapasan",
+        difficulty: "Sulit",
+        question: "Ketika terpapar udara dingin atau debu tebal, saluran pernapasan Bima mengalami penyempitan sehingga dadanya terasa sesak dan napasnya berbunyi (mengi). Gangguan pernapasan yang dialami Bima adalah...",
+        options: {
+          A: "Tuberkulosis (TBC) akibat infeksi bakteri",
+          B: "Asma akibat alergi dan penyempitan saluran bronkiolus",
+          C: "Pneumonia akibat peradangan cairan di alveolus",
+          D: "Influenza akibat infeksi virus musiman"
+        },
+        answer: "B"
+      },
+
+      // --- C. SISTEM TATA SURYA (5 SOAL) ---
+      {
+        id: "q-11",
+        category: "Sistem Tata Surya",
+        difficulty: "Mudah",
+        question: "Semua planet dalam sistem tata surya selalu bergerak teratur mengelilingi Matahari pada lintasan orbitnya masing-masing dan tidak saling bertabrakan karena...",
+        options: {
+          A: "Planet-planet memiliki mesin pendorong alami di bagian intinya",
+          B: "Tidak ada benda langit lain di ruang angkasa",
+          C: "Matahari memiliki massa sangat besar sehingga gaya gravitasinya mengikat planet",
+          D: "Bulan menarik seluruh planet agar tetap sejajar"
+        },
+        answer: "C"
+      },
+      {
+        id: "q-12",
+        category: "Sistem Tata Surya",
+        difficulty: "Sedang",
+        question: "Sabuk asteroid memisahkan kelompok planet dalam (Merkurius, Venus, Bumi, Mars) dengan planet luar (Jupiter, Saturnus, Uranus, Neptunus). Perbedaan utama kedua kelompok planet tersebut adalah...",
+        options: {
+          A: "Planet dalam memiliki cincin tebal, sedangkan planet luar tidak memiliki satelit",
+          B: "Planet dalam tersusun atas gas raksasa, sedangkan planet luar tersusun atas batuan",
+          C: "Planet dalam berada paling jauh dari Matahari, sedangkan planet luar paling dekat",
+          D: "Planet dalam berukuran kecil dan berbatu padat, sedangkan planet luar raksasa dan tersusun atas gas"
+        },
+        answer: "D"
+      },
+      {
+        id: "q-13",
+        category: "Sistem Tata Surya",
+        difficulty: "Sedang",
+        question: "Meskipun planet Venus berada di urutan kedua dari Matahari setelah Merkurius, suhu permukaan Venus justru paling panas di tata surya. Penyebab fenomena ini adalah...",
+        options: {
+          A: "Atmosfer Venus sangat tebal dan kaya gas karbon dioksida yang memerangkap panas",
+          B: "Venus tidak pernah berotasi sehingga satu sisinya terbakar selamanya",
+          C: "Permukaan Venus seluruhnya terdiri dari lautan lava cair",
+          D: "Venus memiliki dua buah matahari kecil yang mengelilinginya"
+        },
+        answer: "A"
+      },
+      {
+        id: "q-14",
+        category: "Sistem Tata Surya",
+        difficulty: "Sulit",
+        question: "Pada siang hari yang cerah, langit tiba-tiba menjadi gelap selama beberapa menit karena posisi Bulan berada tepat di antara Matahari dan Bumi dalam satu garis lurus. Peristiwa alam ini disebut...",
+        options: {
+          A: "Gerhana Bulan Total",
+          B: "Gerhana Matahari Total",
+          C: "Revolusi Bumi terhadap Matahari",
+          D: "Hujan Meteor Perseid"
+        },
+        answer: "B"
+      },
+      {
+        id: "q-15",
+        category: "Sistem Tata Surya",
+        difficulty: "Mudah",
+        question: "Bumi berputar pada porosnya dari arah barat ke timur selama sekitar 24 jam. Dampak langsung dari gerakan rotasi Bumi yang kita rasakan setiap hari adalah...",
+        options: {
+          A: "Perubahan musim panas, gugur, dingin, dan semi",
+          B: "Terjadinya tahun kabisat setiap empat tahun sekali",
+          C: "Pergantian siang dan malam serta perbedaan waktu di berbagai daerah",
+          D: "Perubahan rasi bintang yang terlihat setiap bulan"
+        },
+        answer: "C"
+      },
+
+      // --- D. JEJAK PAHLAWAN (5 SOAL) ---
+      {
+        id: "q-16",
+        category: "Jejak Pahlawan",
+        difficulty: "Mudah",
+        question: "Pada tanggal 16 Agustus 1945, golongan muda membawa Ir. Soekarno dan Drs. Moh. Hatta ke Rengasdengklok. Tujuan utama para pemuda melakukan peristiwa tersebut adalah...",
+        options: {
+          A: "Menyembunyikan tokoh bangsa dari serangan pasukan Sekutu",
+          B: "Meminta bantuan senjata kepada tentara Jepang di Karawang",
+          C: "Menyusun undang-undang dasar negara bersama pemerintah Jepang",
+          D: "Mendesak agar Proklamasi Kemerdekaan segera dilaksanakan tanpa pengaruh Jepang"
+        },
+        answer: "D"
+      },
+      {
+        id: "q-17",
+        category: "Jejak Pahlawan",
+        difficulty: "Sedang",
+        question: "Meskipun sedang menderita sakit paru-paru yang berat, Jenderal Soedirman tetap memimpin pasukan TNI keluar masuk hutan menggunakan tandu dalam Agresi Militer Belanda II. Strategi perlawanan yang diterapkan beliau adalah...",
+        options: {
+          A: "Perang gerilya dengan berpindah-pindah tempat dan menyerang secara tiba-tiba",
+          B: "Perang terbuka di tengah kota besar menggunakan tank baja",
+          C: "Perundingan damai di atas kapal perang Belanda",
+          D: "Blokade jalur perdagangan laut di Selat Sunda"
+        },
+        answer: "A"
+      },
+      {
+        id: "q-18",
+        category: "Jejak Pahlawan",
+        difficulty: "Sedang",
+        question: "Peristiwa pertempuran 10 November 1945 di Surabaya diperingati sebagai Hari Pahlawan. Tokoh yang membakar semangat juang arek-arek Suroboyo melalui pidato radio yang berapi-api adalah...",
+        options: {
+          A: "Ki Hajar Dewantara",
+          B: "Bung Tomo (Sutomo)",
+          C: "Pangeran Diponegoro",
+          D: "Sultan Hasanuddin"
+        },
+        answer: "B"
+      },
+      {
+        id: "q-19",
+        category: "Jejak Pahlawan",
+        difficulty: "Mudah",
+        question: "Ki Hajar Dewantara mendirikan perguruan Taman Siswa untuk memperjuangkan hak pendidikan rakyat Indonesia dan mewariskan semboyan 'Tut Wuri Handayani' yang berarti...",
+        options: {
+          A: "Di depan memberikan contoh teladan yang baik",
+          B: "Di tengah membangun semangat dan kemauan",
+          C: "Di belakang memberikan dorongan dan dukungan",
+          D: "Bersatu kita teguh, bercerai kita runtuh"
+        },
+        answer: "C"
+      },
+      {
+        id: "q-20",
+        category: "Jejak Pahlawan",
+        difficulty: "Sulit",
+        question: "Para pahlawan rela mengorbankan jiwa dan raga demi kemerdekaan Indonesia. Sikap paling tepat yang dapat dilakukan siswa kelas 6 SD untuk meneladani semangat kepahlawanan pada masa sekarang adalah...",
+        options: {
+          A: "Menolak berteman dengan siswa yang berbeda suku dan budaya",
+          B: "Hanya mau belajar apabila dijanjikan hadiah oleh orang tua",
+          C: "Mengutamakan kepentingan pribadi di atas kerja sama kelompok",
+          D: "Belajar dengan tekun, menjaga persatuan teman, dan mengikuti upacara dengan khidmat"
+        },
+        answer: "D"
+      }
+    ];
+
+    /* =========================================================================
+       MODULE 2: STORAGE & CONFIGURATION MANAGER
+       ========================================================================= */
+    const STORAGE_KEYS = {
+      QUESTIONS: "src3d_questions_v2",
+      SETTINGS: "src3d_settings_v2"
+    };
+
+    const DEFAULT_SETTINGS = {
+      p1Name: "Pemain 1",
+      p2Name: "Pemain 2",
+      p1Color: "#ef4444",
+      p2Color: "#2563eb",
+      timerSeconds: 30,
+      questionCount: 20,
+      trackLength: 12,
+      animSpeed: 1.25,
+      musicEnabled: true,
+      sfxEnabled: true,
+      quotas: {
+        "Sistem Pencernaan": 5,
+        "Sistem Pernapasan": 5,
+        "Sistem Tata Surya": 5,
+        "Jejak Pahlawan": 5
+      }
+    };
+
+    class StorageManager {
+      static getQuestions() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.QUESTIONS);
+          if (!raw) return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) {
+          console.warn("Gagal membaca bank soal tersimpan:", e);
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_QUESTIONS));
+      }
+
+      static saveQuestions(questions) {
+        try {
+          localStorage.setItem(STORAGE_KEYS.QUESTIONS, JSON.stringify(questions));
+        } catch (e) {
+          console.warn("Gagal menyimpan bank soal:", e);
+        }
+      }
+
+      static getSettings() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+          if (!raw) return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+          const parsed = JSON.parse(raw);
+          return {
+            ...DEFAULT_SETTINGS,
+            ...parsed,
+            quotas: { ...DEFAULT_SETTINGS.quotas, ...(parsed.quotas || {}) }
+          };
+        } catch (e) {
+          console.warn("Gagal membaca pengaturan:", e);
+        }
+        return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      }
+
+      static saveSettings(settings) {
+        try {
+          localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+        } catch (e) {
+          console.warn("Gagal menyimpan pengaturan:", e);
+        }
+      }
+    }
+
+    /* =========================================================================
+       MODULE 3: PROCEDURAL WEB AUDIO SYNTHESIZER (ENGINE, TURBO, SFX & MUSIC)
+       ========================================================================= */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.masterMuted = false;
+        this.musicEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmInterval = null;
+        this.bgmStep = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      syncSettings(settings) {
+        this.musicEnabled = settings.musicEnabled;
+        this.sfxEnabled = settings.sfxEnabled;
+        if (this.masterMuted || !this.musicEnabled) {
+          this.stopMusic();
+        }
+      }
+
+      toggleMute() {
+        this.masterMuted = !this.masterMuted;
+        if (this.masterMuted) {
+          this.stopMusic();
+        } else if (this.musicEnabled && gameEngine && gameEngine.state === "RACING") {
+          this.startMusic();
+        }
+        return !this.masterMuted;
+      }
+
+      playTone(freq, duration, type = "sine", volume = 0.15, slideTo = null) {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (slideTo) {
+          osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+        }
+
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration);
+      }
+
+      playEngineRev() {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        this.playTone(72, 0.55, "sawtooth", 0.14, 165);
+        setTimeout(() => this.playTone(140, 0.45, "triangle", 0.12, 250), 110);
+      }
+
+      playAcceleration() {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        this.playTone(115, 0.65, "sawtooth", 0.15, 410);
+        this.playTone(440, 0.5, "sine", 0.10, 880);
+      }
+
+      playCorrect() {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        this.playTone(523.25, 0.14, "triangle", 0.18);
+        setTimeout(() => this.playTone(659.25, 0.14, "triangle", 0.18), 85);
+        setTimeout(() => this.playTone(783.99, 0.24, "triangle", 0.20), 170);
+        setTimeout(() => this.playAcceleration(), 110);
+      }
+
+      playWrong() {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        this.playTone(190, 0.22, "sawtooth", 0.16, 130);
+        setTimeout(() => this.playTone(145, 0.30, "sawtooth", 0.16, 95), 140);
+      }
+
+      playCountdownTick(isFinalGo = false) {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        if (isFinalGo) {
+          this.playTone(880, 0.45, "triangle", 0.22, 1174.66);
+          this.playEngineRev();
+        } else {
+          this.playTone(440, 0.16, "sine", 0.16);
+        }
+      }
+
+      playVictory() {
+        if (this.masterMuted || !this.sfxEnabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+        const times = [0, 130, 260, 400, 580, 730];
+        notes.forEach((n, idx) => {
+          setTimeout(() => this.playTone(n, 0.28, "triangle", 0.22), times[idx]);
+        });
+      }
+
+      startMusic() {
+        if (this.masterMuted || !this.musicEnabled || this.bgmInterval) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const bassNotes = [110, 110, 130.81, 146.83, 110, 110, 164.81, 146.83];
+        this.bgmStep = 0;
+
+        this.bgmInterval = setInterval(() => {
+          if (this.masterMuted || !this.musicEnabled) return;
+          const freq = bassNotes[this.bgmStep % bassNotes.length];
+          this.playMusicPulse(freq, 0.18, 0.045);
+          if (this.bgmStep % 4 === 0) {
+            this.playMusicPulse(freq * 4, 0.09, 0.02);
+          }
+          this.bgmStep++;
+        }, 230);
+      }
+
+      playMusicPulse(freq, duration, volume) {
+        if (!this.ctx || this.masterMuted || !this.musicEnabled) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+      }
+
+      stopMusic() {
+        if (this.bgmInterval) {
+          clearInterval(this.bgmInterval);
+          this.bgmInterval = null;
+        }
+      }
+    }
+
+    /* =========================================================================
+       MODULE 4: THREE.JS 3D CONTINUOUS HIGH-SPEED SCIENTIFIC RACING ENGINE
+       - Both cars are ALWAYS speeding forward down an endless scenic stadium circuit!
+       - Road asphalt, curbs, trees, grandstands, and science arches stream continuously!
+       - Correct answers trigger a dramatic Turbo Nitrous Surge ahead of the opponent
+         and draw the red-and-checkered FINIS arch closer until crossing it!
+       ========================================================================= */
+    class RaceScene3D {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+
+        this.car1 = null;
+        this.car2 = null;
+
+        // Scrolling World Elements so cars are ALWAYS driving continuously!
+        this.roadTexture = null;
+        this.scrollingProps = [];
+        this.finishArchGroup = null;
+        this.startArchGroup = null;
+        this.particles = [];
+
+        // Continuous forward speed & relative lead state
+        this.baseDriveSpeed = 24; // Continuous forward speed (units/sec)
+        this.trackLengthSteps = 12;
+        this.leadPerStep = 2.1; // Forward lead separation per correct answer
+
+        this.car1State = { steps: 0, visualLead: 0, boostTimer: 0, shake: 0 };
+        this.car2State = { steps: 0, visualLead: 0, boostTimer: 0, shake: 0 };
+
+        // Camera modes: "SHOWCASE" (Landing Screen) | "RACING" (Gameplay) | "FINISH" (Victory)
+        this.cameraMode = "SHOWCASE";
+        this.showcaseOrbitOffset = 0;
+        this.isDraggingOrbit = false;
+        this.prevPointerX = 0;
+        this.animSpeedMultiplier = 1.25;
+
+        this.clock = new THREE.Clock();
+        this.initThree();
+        this.buildScenicStadiumEnvironment();
+        this.buildContinuousTrack();
+        this.buildCars("#ef4444", "#2563eb");
+        this.bindInteractionEvents();
+      }
+
+      initThree() {
+        const width = this.container.clientWidth || window.innerWidth;
+        const height = this.container.clientHeight || window.innerHeight;
+
+        this.scene = new THREE.Scene();
+        // Vibrant Daylight Blue Sky with Cosmic Horizon matching the Reference Image!
+        this.scene.background = new THREE.Color(0x38bdf8);
+        this.scene.fog = new THREE.FogExp2(0x7dd3fc, 0.0042);
+
+        this.camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 450);
+        this.camera.position.set(0, 5.2, 13);
+
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        this.renderer.setSize(width, height);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.15;
+
+        this.container.appendChild(this.renderer.domElement);
+      }
+
+      createAsphaltTexture() {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext("2d");
+
+        // Rich racing asphalt
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let i = 0; i < 4000; i++) {
+          const x = Math.random() * 512;
+          const y = Math.random() * 512;
+          const v = 26 + Math.floor(Math.random() * 24);
+          ctx.fillStyle = `rgb(${v},${v + 5},${v + 15})`;
+          ctx.fillRect(x, y, 2, 2);
+        }
+
+        // Crisp white outer track lines + glowing cyan inner stripes
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(14, 0, 10, 512);
+        ctx.fillRect(488, 0, 10, 512);
+
+        ctx.fillStyle = "#38bdf8";
+        ctx.fillRect(28, 0, 5, 512);
+        ctx.fillRect(479, 0, 5, 512);
+
+        // Center dashed lane divider
+        ctx.fillStyle = "#f8fafc";
+        for (let y = 16; y < 512; y += 64) {
+          ctx.fillRect(251, y, 10, 36);
+        }
+
+        const tex = new THREE.CanvasTexture(canvas);
+        tex.wrapS = THREE.RepeatWrapping;
+        tex.wrapT = THREE.RepeatWrapping;
+        tex.repeat.set(1, 32);
+        return tex;
+      }
+
+      createCheckerTexture(labelText = "FINIS", bgColor = "#dc2626") {
+        const canvas = document.createElement("canvas");
+        canvas.width = 512;
+        canvas.height = 128;
+        const ctx = canvas.getContext("2d");
+
+        const sq = 16;
+        for (let y = 0; y < 128; y += sq) {
+          for (let x = 0; x < 512; x += sq) {
+            ctx.fillStyle = ((x / sq + y / sq) % 2 === 0) ? "#ffffff" : "#0f172a";
+            ctx.fillRect(x, y, sq, sq);
+          }
+        }
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(145, 28, 222, 72);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        ctx.strokeRect(145, 28, 222, 72);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "900 38px Orbitron, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(labelText, 256, 65);
+
+        return new THREE.CanvasTexture(canvas);
+      }
+
+      createArchBannerTexture(title, subtitle, theme = "BLUE") {
+        const canvas = document.createElement("canvas");
+        canvas.width = 1024;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+
+        const grad = ctx.createLinearGradient(0, 0, 1024, 256);
+        if (theme === "RED") {
+          grad.addColorStop(0, "#7f1d1d");
+          grad.addColorStop(0.5, "#dc2626");
+          grad.addColorStop(1, "#7f1d1d");
+        } else {
+          grad.addColorStop(0, "#0c4a6e");
+          grad.addColorStop(0.5, "#0284c7");
+          grad.addColorStop(1, "#0c4a6e");
+        }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1024, 256);
+
+        ctx.strokeStyle = theme === "RED" ? "#fef08a" : "#7dd3fc";
+        ctx.lineWidth = 10;
+        ctx.strokeRect(10, 10, 1004, 236);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "900 54px Orbitron, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(title, 512, 118);
+
+        ctx.fillStyle = "#fde047";
+        ctx.font = "800 30px Inter, sans-serif";
+        ctx.fillText(subtitle, 512, 184);
+
+        return new THREE.CanvasTexture(canvas);
+      }
+
+      buildScenicStadiumEnvironment() {
+        // Bright Sunlight + Sky Hemisphere Light
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x15803d, 0.95);
+        this.scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.35);
+        dirLight.position.set(35, 55, 30);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 5;
+        dirLight.shadow.camera.far = 200;
+        const d = 70;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        this.scene.add(dirLight);
+
+        // Lush Green Stadium Lawn Ground
+        const grassGeo = new THREE.PlaneGeometry(420, 480);
+        const grassMat = new THREE.MeshStandardMaterial({
+          color: 0x16a34a,
+          roughness: 0.85,
+          metalness: 0.05
+        });
+        const grass = new THREE.Mesh(grassGeo, grassMat);
+        grass.rotation.x = -Math.PI / 2;
+        grass.position.set(0, -0.08, -100);
+        grass.receiveShadow = true;
+        this.scene.add(grass);
+
+        // Scenic Rolling Green Hills in the Background Horizon
+        const hillMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.9 });
+        const hillConfigs = [
+          [-55, -180, 45, 24],
+          [60, -190, 52, 28],
+          [-22, -210, 38, 19],
+          [26, -205, 42, 21]
+        ];
+        hillConfigs.forEach(([hx, hz, hr, hh]) => {
+          const hill = new THREE.Mesh(new THREE.ConeGeometry(hr, hh, 24), hillMat);
+          hill.position.set(hx, hh * 0.45, hz);
+          this.scene.add(hill);
+        });
+
+        // Distant Cosmic Saturn & Sun Glow in Upper Sky (Matches Artwork Horizon!)
+        const planetGroup = new THREE.Group();
+        planetGroup.position.set(48, 42, -175);
+        const planetSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(7.5, 24, 24),
+          new THREE.MeshBasicMaterial({ color: 0xfbbf24 })
+        );
+        planetGroup.add(planetSphere);
+        const planetRing = new THREE.Mesh(
+          new THREE.TorusGeometry(13, 0.9, 10, 48),
+          new THREE.MeshBasicMaterial({ color: 0xfef08a })
+        );
+        planetRing.rotation.x = Math.PI / 2.6;
+        planetRing.rotation.y = -0.35;
+        planetGroup.add(planetRing);
+        this.scene.add(planetGroup);
+
+        // Fluffy White Clouds in Sky
+        const cloudMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
+        const cloudPositions = [
+          [-45, 34, -140], [-15, 40, -165], [22, 36, -150], [65, 32, -135]
+        ];
+        cloudPositions.forEach(([cx, cy, cz]) => {
+          const cGroup = new THREE.Group();
+          cGroup.position.set(cx, cy, cz);
+          for (let j = 0; j < 4; j++) {
+            const puff = new THREE.Mesh(new THREE.SphereGeometry(4.5 + (j % 2) * 2, 12, 12), cloudMat);
+            puff.position.set((j - 1.5) * 4.2, (j % 2) * 1.2, 0);
+            cGroup.add(puff);
+          }
+          this.scene.add(cGroup);
+        });
+      }
+
+      buildContinuousTrack() {
+        const trackLen = 280;
+        this.roadTexture = this.createAsphaltTexture();
+
+        // Main Asphalt Highway
+        const roadGeo = new THREE.BoxGeometry(11.6, 0.16, trackLen);
+        const roadMat = new THREE.MeshStandardMaterial({
+          map: this.roadTexture,
+          roughness: 0.5,
+          metalness: 0.2
+        });
+        const roadMesh = new THREE.Mesh(roadGeo, roadMat);
+        roadMesh.position.set(0, 0, -95);
+        roadMesh.receiveShadow = true;
+        this.scene.add(roadMesh);
+
+        // Continuous Scrolling Trackside Props: Red-White Curbs, Trees, Grandstands, Science Lab Pylons
+        const curbMatRed = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
+        const curbMatWhite = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 });
+        const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+        const leafMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, roughness: 0.75 });
+        const labWallMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.3, roughness: 0.4 });
+        const labGlassMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0ea5e9, emissiveIntensity: 0.35 });
+
+        const loopSpan = 240;
+        const stepZ = 10;
+        const count = loopSpan / stepZ;
+
+        for (let i = 0; i < count; i++) {
+          const z = 30 - i * stepZ;
+          const rowGroup = new THREE.Group();
+          rowGroup.position.set(0, 0, z);
+
+          // Left & Right Red/White Racing Curbs
+          const cMat = i % 2 === 0 ? curbMatRed : curbMatWhite;
+          const curbGeo = new THREE.BoxGeometry(0.75, 0.25, stepZ);
+          const leftCurb = new THREE.Mesh(curbGeo, cMat);
+          leftCurb.position.set(-6.15, 0.05, 0);
+          leftCurb.receiveShadow = true;
+          rowGroup.add(leftCurb);
+
+          const rightCurb = new THREE.Mesh(curbGeo, cMat);
+          rightCurb.position.set(6.15, 0.05, 0);
+          rightCurb.receiveShadow = true;
+          rowGroup.add(rightCurb);
+
+          // Trackside Trees & Futuristic Science Lab Pavilions
+          if (i % 2 === 0) {
+            // Left: Futuristic Science Stadium Pavilion + Tree
+            const labBuilding = new THREE.Mesh(new THREE.BoxGeometry(6, 4.5, 6.5), labWallMat);
+            labBuilding.position.set(-14.5, 2.25, 0);
+            labBuilding.castShadow = true;
+            rowGroup.add(labBuilding);
+
+            const labWindow = new THREE.Mesh(new THREE.BoxGeometry(6.15, 1.4, 5.2), labGlassMat);
+            labWindow.position.set(-14.5, 2.7, 0);
+            rowGroup.add(labWindow);
+
+            // Right: Lush Green Trees
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 2.2, 8), trunkMat);
+            trunk.position.set(11.5, 1.1, 0);
+            rowGroup.add(trunk);
+
+            const crown = new THREE.Mesh(new THREE.ConeGeometry(2.1, 4.5, 10), leafMat);
+            crown.position.set(11.5, 4.0, 0);
+            crown.castShadow = true;
+            rowGroup.add(crown);
+          } else {
+            // Left: Tree
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 2.2, 8), trunkMat);
+            trunk.position.set(-10.2, 1.1, 0);
+            rowGroup.add(trunk);
+
+            const crown = new THREE.Mesh(new THREE.SphereGeometry(1.9, 10, 10), leafMat);
+            crown.position.set(-10.2, 3.3, 0);
+            crown.castShadow = true;
+            rowGroup.add(crown);
+
+            // Right: Glowing Science Hologram Pylon
+            const pylonBase = new THREE.Mesh(
+              new THREE.CylinderGeometry(0.55, 0.75, 1.4, 12),
+              new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7 })
+            );
+            pylonBase.position.set(9.2, 0.7, 0);
+            rowGroup.add(pylonBase);
+
+            const orb = new THREE.Mesh(
+              new THREE.OctahedronGeometry(0.65, 0),
+              new THREE.MeshBasicMaterial({ color: i % 4 === 1 ? 0x38bdf8 : 0xfbbf24 })
+            );
+            orb.position.set(9.2, 2.4, 0);
+            rowGroup.add(orb);
+          }
+
+          this.scene.add(rowGroup);
+          this.scrollingProps.push(rowGroup);
+        }
+
+        // Overhead "SCIENCE RACING 3D" Stadium Arch (loops seamlessly)
+        this.startArchGroup = this.createOverheadArch("SCIENCE RACING 3D", "THINK FAST, ANSWER SMART, RACE TO WIN!", "BLUE");
+        this.startArchGroup.position.set(0, 0, -45);
+        this.scene.add(this.startArchGroup);
+        this.scrollingProps.push(this.startArchGroup);
+
+        // Grand Red & Checkered "FINIS" Arch (dynamically approaches as cars near target steps!)
+        this.finishArchGroup = this.createOverheadArch("FINIS", "GARIS AKHIR BALAPAN IPAS 🏁", "RED");
+        const finishStrip = new THREE.Mesh(
+          new THREE.PlaneGeometry(11.2, 2.6),
+          new THREE.MeshBasicMaterial({ map: this.createCheckerTexture("FINIS", "#dc2626") })
+        );
+        finishStrip.rotation.x = -Math.PI / 2;
+        finishStrip.position.set(0, 0.09, 0);
+        this.finishArchGroup.add(finishStrip);
+        this.finishArchGroup.position.set(0, 0, -85);
+        this.scene.add(this.finishArchGroup);
+      }
+
+      createOverheadArch(title, subtitle, theme) {
+        const archGroup = new THREE.Group();
+        const pillarColor = theme === "RED" ? 0xb91c1c : 0x0f172a;
+        const pillarMat = new THREE.MeshStandardMaterial({ color: pillarColor, metalness: 0.6, roughness: 0.3 });
+        const pillarGeo = new THREE.BoxGeometry(0.95, 6.4, 0.95);
+
+        const leftPillar = new THREE.Mesh(pillarGeo, pillarMat);
+        leftPillar.position.set(-6.5, 3.2, 0);
+        leftPillar.castShadow = true;
+        archGroup.add(leftPillar);
+
+        const rightPillar = new THREE.Mesh(pillarGeo, pillarMat);
+        rightPillar.position.set(6.5, 3.2, 0);
+        rightPillar.castShadow = true;
+        archGroup.add(rightPillar);
+
+        const banner = new THREE.Mesh(
+          new THREE.BoxGeometry(14.0, 2.3, 0.5),
+          new THREE.MeshStandardMaterial({
+            map: this.createArchBannerTexture(title, subtitle, theme),
+            roughness: 0.35
+          })
+        );
+        banner.position.set(0, 6.2, 0);
+        archGroup.add(banner);
+
+        return archGroup;
+      }
+
+      createRaceCarMesh(hexColor, playerNum) {
+        const carGroup = new THREE.Group();
+        const primaryColor = new THREE.Color(hexColor);
+
+        const bodyMat = new THREE.MeshStandardMaterial({
+          color: primaryColor,
+          metalness: 0.65,
+          roughness: 0.2
+        });
+        const darkCarbonMat = new THREE.MeshStandardMaterial({
+          color: 0x0f172a,
+          metalness: 0.5,
+          roughness: 0.4
+        });
+        const glassMat = new THREE.MeshStandardMaterial({
+          color: 0x020617,
+          metalness: 0.92,
+          roughness: 0.08,
+          emissive: 0x38bdf8,
+          emissiveIntensity: 0.15
+        });
+
+        // Lower Chassis
+        const chassis = new THREE.Mesh(new THREE.BoxGeometry(2.18, 0.34, 4.55), darkCarbonMat);
+        chassis.position.set(0, 0.44, 0);
+        chassis.castShadow = true;
+        carGroup.add(chassis);
+
+        // Main Aerodynamic GT Body
+        const mainBody = new THREE.Mesh(new THREE.BoxGeometry(1.98, 0.48, 4.2), bodyMat);
+        mainBody.position.set(0, 0.72, 0.05);
+        mainBody.castShadow = true;
+        carGroup.add(mainBody);
+
+        // Sloped Front Nose
+        const nose = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.34, 1.3), bodyMat);
+        nose.position.set(0, 0.62, -2.08);
+        nose.rotation.x = 0.15;
+        nose.castShadow = true;
+        carGroup.add(nose);
+
+        // Front Splitter Wing
+        const frontWing = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.1, 0.55), darkCarbonMat);
+        frontWing.position.set(0, 0.33, -2.58);
+        frontWing.castShadow = true;
+        carGroup.add(frontWing);
+
+        // Cockpit Canopy
+        const cockpit = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.48, 1.88), glassMat);
+        cockpit.position.set(0, 1.08, 0.15);
+        cockpit.castShadow = true;
+        carGroup.add(cockpit);
+
+        // Roof Scoop
+        const scoop = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.22, 0.85), bodyMat);
+        scoop.position.set(0, 1.36, 0.45);
+        carGroup.add(scoop);
+
+        // Rear Spoiler Wing & Struts
+        const strutGeo = new THREE.BoxGeometry(0.1, 0.55, 0.35);
+        const strutL = new THREE.Mesh(strutGeo, darkCarbonMat);
+        strutL.position.set(-0.65, 1.15, 1.88);
+        carGroup.add(strutL);
+
+        const strutR = new THREE.Mesh(strutGeo, darkCarbonMat);
+        strutR.position.set(0.65, 1.15, 1.88);
+        carGroup.add(strutR);
+
+        const rearWing = new THREE.Mesh(new THREE.BoxGeometry(2.28, 0.12, 0.52), bodyMat);
+        rearWing.position.set(0, 1.44, 1.95);
+        rearWing.rotation.x = -0.1;
+        rearWing.castShadow = true;
+        carGroup.add(rearWing);
+
+        // LED Headlights
+        const hlMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const hlGeo = new THREE.BoxGeometry(0.44, 0.12, 0.1);
+        const hlL = new THREE.Mesh(hlGeo, hlMat);
+        hlL.position.set(-0.62, 0.64, -2.64);
+        carGroup.add(hlL);
+
+        const hlR = new THREE.Mesh(hlGeo, hlMat);
+        hlR.position.set(0.62, 0.64, -2.64);
+        carGroup.add(hlR);
+
+        // LED Tail Light Bar & Dual Exhausts
+        const tailBar = new THREE.Mesh(
+          new THREE.BoxGeometry(1.78, 0.13, 0.08),
+          new THREE.MeshBasicMaterial({ color: 0xff1e42 })
+        );
+        tailBar.position.set(0, 0.82, 2.18);
+        carGroup.add(tailBar);
+
+        const exhaustMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, metalness: 0.9, roughness: 0.15 });
+        const exGeo = new THREE.CylinderGeometry(0.13, 0.15, 0.35, 12);
+        const exL = new THREE.Mesh(exGeo, exhaustMat);
+        exL.rotation.x = Math.PI / 2;
+        exL.position.set(-0.42, 0.48, 2.28);
+        carGroup.add(exL);
+
+        const exR = new THREE.Mesh(exGeo, exhaustMat);
+        exR.rotation.x = Math.PI / 2;
+        exR.position.set(0.42, 0.48, 2.28);
+        carGroup.add(exR);
+
+        // Neon Underglow
+        const underglowMat = new THREE.MeshBasicMaterial({
+          color: primaryColor,
+          transparent: true,
+          opacity: 0.45,
+          side: THREE.DoubleSide
+        });
+        const underglow = new THREE.Mesh(new THREE.PlaneGeometry(2.3, 4.6), underglowMat);
+        underglow.rotation.x = -Math.PI / 2;
+        underglow.position.set(0, 0.11, 0);
+        carGroup.add(underglow);
+
+        // 4 Rotating Wheels with Bright Rims & Spokes
+        const wheels = [];
+        const wheelPositions = [
+          [-1.14, 0.44, -1.44],
+          [1.14, 0.44, -1.44],
+          [-1.17, 0.46, 1.40],
+          [1.17, 0.46, 1.40]
+        ];
+        const tireMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
+        const rimMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.85, roughness: 0.2 });
+
+        wheelPositions.forEach(([wx, wy, wz], idx) => {
+          const wheelPivot = new THREE.Group();
+          wheelPivot.position.set(wx, wy, wz);
+          const radius = idx >= 2 ? 0.46 : 0.43;
+
+          const tireGeo = new THREE.CylinderGeometry(radius, radius, 0.38, 24);
+          tireGeo.rotateZ(Math.PI / 2);
+          const tire = new THREE.Mesh(tireGeo, tireMat);
+          tire.castShadow = true;
+          wheelPivot.add(tire);
+
+          const rimGeo = new THREE.CylinderGeometry(radius * 0.62, radius * 0.62, 0.40, 16);
+          rimGeo.rotateZ(Math.PI / 2);
+          const rim = new THREE.Mesh(rimGeo, rimMat);
+          wheelPivot.add(rim);
+
+          const spokeGeo = new THREE.BoxGeometry(0.42, radius * 1.12, 0.1);
+          const spoke = new THREE.Mesh(spokeGeo, bodyMat);
+          wheelPivot.add(spoke);
+
+          carGroup.add(wheelPivot);
+          wheels.push(wheelPivot);
+        });
+
+        carGroup.userData = { wheels, bodyMat, underglowMat, playerNum };
+        return carGroup;
+      }
+
+      buildCars(p1Hex, p2Hex) {
+        if (this.car1) this.scene.remove(this.car1);
+        if (this.car2) this.scene.remove(this.car2);
+
+        this.car1 = this.createRaceCarMesh(p1Hex, 1);
+        this.car2 = this.createRaceCarMesh(p2Hex, 2);
+
+        // Lane 1 (Left X = -2.55), Lane 2 (Right X = +2.55)
+        this.car1.position.set(-2.55, 0, 0);
+        this.car2.position.set(2.55, 0, 0);
+
+        this.scene.add(this.car1);
+        this.scene.add(this.car2);
+      }
+
+      updateCarColors(p1Hex, p2Hex) {
+        if (this.car1) {
+          this.car1.userData.bodyMat.color.set(p1Hex);
+          this.car1.userData.underglowMat.color.set(p1Hex);
+        }
+        if (this.car2) {
+          this.car2.userData.bodyMat.color.set(p2Hex);
+          this.car2.userData.underglowMat.color.set(p2Hex);
+        }
+      }
+
+      configureTrackLength(stepsCount) {
+        this.trackLengthSteps = Math.max(5, Number(stepsCount) || 12);
+      }
+
+      resetCarsToStart() {
+        this.car1State = { steps: 0, visualLead: 0, boostTimer: 0, shake: 0 };
+        this.car2State = { steps: 0, visualLead: 0, boostTimer: 0, shake: 0 };
+        if (this.car1) {
+          this.car1.position.set(-2.55, 0, 0);
+          this.car1.rotation.set(0, 0, 0);
+        }
+        if (this.car2) {
+          this.car2.position.set(2.55, 0, 0);
+          this.car2.rotation.set(0, 0, 0);
+        }
+      }
+
+      advanceCar(playerNum, newStepCount) {
+        const clamped = Math.min(newStepCount, this.trackLengthSteps);
+        if (playerNum === 1) {
+          this.car1State.steps = clamped;
+          this.car1State.boostTimer = 0.9;
+          this.spawnBoostParticles(this.car1.position, 0xf43f5e, 26);
+        } else {
+          this.car2State.steps = clamped;
+          this.car2State.boostTimer = 0.9;
+          this.spawnBoostParticles(this.car2.position, 0x38bdf8, 26);
+        }
+      }
+
+      triggerWrongShake(playerNum) {
+        if (playerNum === 1) {
+          this.car1State.shake = 0.45;
+        } else {
+          this.car2State.shake = 0.45;
+        }
+      }
+
+      spawnBoostParticles(originPos, colorHex, count = 12) {
+        const geo = new THREE.SphereGeometry(0.17, 8, 8);
+        for (let i = 0; i < count; i++) {
+          const mat = new THREE.MeshBasicMaterial({
+            color: i % 2 === 0 ? colorHex : 0xfef08a,
+            transparent: true,
+            opacity: 0.92
+          });
+          const p = new THREE.Mesh(geo, mat);
+          p.position.set(
+            originPos.x + (Math.random() - 0.5) * 1.15,
+            0.42 + Math.random() * 0.4,
+            originPos.z + 2.25 + Math.random() * 0.5
+          );
+          this.scene.add(p);
+          this.particles.push({
+            mesh: p,
+            vx: (Math.random() - 0.5) * 2.8,
+            vy: 0.9 + Math.random() * 2.4,
+            vz: 12.0 + Math.random() * 10.0,
+            life: 0.45 + Math.random() * 0.3
+          });
+        }
+      }
+
+      setCameraMode(mode) {
+        this.cameraMode = mode;
+        if (mode === "SHOWCASE") {
+          this.resetCarsToStart();
+        }
+      }
+
+      bindInteractionEvents() {
+        const dom = this.renderer.domElement;
+
+        dom.addEventListener("pointerdown", (e) => {
+          this.isDraggingOrbit = true;
+          this.prevPointerX = e.clientX;
+        });
+
+        window.addEventListener("pointermove", (e) => {
+          if (!this.isDraggingOrbit) return;
+          const dx = e.clientX - this.prevPointerX;
+          this.prevPointerX = e.clientX;
+          this.showcaseOrbitOffset = Math.max(-7, Math.min(7, this.showcaseOrbitOffset - dx * 0.025));
+        });
+
+        window.addEventListener("pointerup", () => {
+          this.isDraggingOrbit = false;
+        });
+
+        window.addEventListener("resize", () => this.handleResize());
+      }
+
+      handleResize() {
+        if (!this.container || !this.renderer || !this.camera) return;
+        const w = this.container.clientWidth || window.innerWidth;
+        const h = this.container.clientHeight || window.innerHeight;
+        this.camera.aspect = w / h;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(w, h);
+      }
+
+      updateContinuousCarMotion(car, state, baseX, dt, elapsed, phaseOffset) {
+        if (!car) return;
+
+        // 1. Target lead ahead based on correct answers (steps)
+        const targetLead = state.steps * this.leadPerStep;
+        const lerpRate = Math.min(1, dt * 3.8 * this.animSpeedMultiplier);
+        state.visualLead += (targetLead - state.visualLead) * lerpRate;
+
+        // 2. Continuous high-speed wheel rotation (NEVER stops!)
+        const activeSpeed = this.baseDriveSpeed * this.animSpeedMultiplier + (state.boostTimer > 0 ? 18 : 0);
+        const wheelSpinRate = activeSpeed * 0.85 * dt;
+        car.userData.wheels.forEach((w) => {
+          w.rotation.x -= wheelSpinRate;
+        });
+
+        // 3. Continuous subtle road vibration & aerodynamic lane weave so cars always feel alive
+        const roadVibrationY = Math.abs(Math.sin(elapsed * 28 + phaseOffset)) * 0.028;
+        const liveWeaveX = Math.sin(elapsed * 1.9 + phaseOffset) * 0.16;
+        const liveSurgeZ = Math.sin(elapsed * 2.4 + phaseOffset) * 0.38;
+
+        // 4. Turbo boost pitch & exhaust flames on correct answer
+        if (state.boostTimer > 0) {
+          state.boostTimer -= dt;
+          car.rotation.x = THREE.MathUtils.lerp(car.rotation.x, 0.048, dt * 10);
+          if (Math.random() < 0.65) {
+            this.spawnBoostParticles(car.position, car.userData.playerNum === 1 ? 0xf43f5e : 0x38bdf8, 2);
+          }
+        } else {
+          car.rotation.x = THREE.MathUtils.lerp(car.rotation.x, 0, dt * 8);
+          // Subtle continuous exhaust sparks while cruising
+          if (Math.random() < 0.18) {
+            this.spawnBoostParticles(car.position, car.userData.playerNum === 1 ? 0xfb7185 : 0x7dd3fc, 1);
+          }
+        }
+
+        // 5. Wrong answer wobble (car still keeps moving forward!)
+        let shakeOffsetX = 0;
+        if (state.shake > 0) {
+          state.shake -= dt;
+          shakeOffsetX = Math.sin(state.shake * 45) * 0.22 * state.shake;
+        }
+
+        car.position.x = baseX + liveWeaveX + shakeOffsetX;
+        car.position.y = roadVibrationY;
+        car.position.z = -state.visualLead + liveSurgeZ;
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+
+        const dt = Math.min(this.clock.getDelta(), 0.05);
+        const elapsed = this.clock.getElapsedTime();
+
+        // Scroll Road Asphalt Texture & All Trackside Scenery Continuously!
+        const scrollSpeed = this.baseDriveSpeed * this.animSpeedMultiplier;
+        if (this.roadTexture) {
+          this.roadTexture.offset.y -= scrollSpeed * dt * 0.115;
+        }
+
+        const loopSpan = 240;
+        this.scrollingProps.forEach((prop) => {
+          prop.position.z += scrollSpeed * dt;
+          if (prop.position.z > 35) {
+            prop.position.z -= loopSpan;
+          }
+        });
+
+        // Update both cars' continuous motion
+        this.updateContinuousCarMotion(this.car1, this.car1State, -2.55, dt, elapsed, 0);
+        this.updateContinuousCarMotion(this.car2, this.car2State, 2.55, dt, elapsed, 2.1);
+
+        // Dynamically position the grand red "FINIS" arch ahead of the cars based on remaining steps!
+        if (this.finishArchGroup) {
+          if (this.cameraMode === "SHOWCASE") {
+            // Keep FINIS arch visible far down the horizon during Landing showcase
+            this.finishArchGroup.position.z = -115;
+          } else {
+            const maxSteps = Math.max(this.car1State.steps, this.car2State.steps);
+            const remainingSteps = Math.max(0, this.trackLengthSteps - maxSteps);
+            const leadCarZ = Math.min(this.car1.position.z, this.car2.position.z);
+            // When remainingSteps == 0, FINIS arch sits right over/past the winning car!
+            const targetFinishZ = remainingSteps === 0
+              ? leadCarZ + 2.5
+              : leadCarZ - (remainingSteps * 7.5 + 14);
+            this.finishArchGroup.position.z = THREE.MathUtils.lerp(this.finishArchGroup.position.z, targetFinishZ, dt * 4.5);
+          }
+        }
+
+        // Update exhaust & turbo boost particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.life -= dt;
+          if (p.life <= 0) {
+            this.scene.remove(p.mesh);
+            p.mesh.geometry.dispose();
+            p.mesh.material.dispose();
+            this.particles.splice(i, 1);
+          } else {
+            p.mesh.position.x += p.vx * dt;
+            p.mesh.position.y += p.vy * dt;
+            p.mesh.position.z += p.vz * dt;
+            p.mesh.material.opacity = Math.max(0, p.life);
+            p.mesh.scale.setScalar(p.life * 1.1);
+          }
+        }
+
+        // Camera State Machine
+        if (this.cameraMode === "SHOWCASE") {
+          // Dramatic low front-three-quarter hero camera watching both cars speed toward the viewer!
+          if (!this.isDraggingOrbit) {
+            this.showcaseOrbitOffset = Math.sin(elapsed * 0.45) * 2.2;
+          }
+          const targetCam = new THREE.Vector3(this.showcaseOrbitOffset, 3.3, -9.2);
+          this.camera.position.lerp(targetCam, dt * 4);
+          this.camera.lookAt(0, 0.95, 0.5);
+        } else if (this.cameraMode === "RACING") {
+          // Dynamic chase camera behind both racing cars (matching top-right gameplay perspective)
+          const z1 = this.car1 ? this.car1.position.z : 0;
+          const z2 = this.car2 ? this.car2.position.z : 0;
+          const avgZ = (z1 + z2) * 0.5;
+          const leadZ = Math.min(z1, z2);
+          const spread = Math.abs(z1 - z2);
+
+          const camHeight = 4.6 + Math.min(spread * 0.14, 3.2);
+          const camBackZ = avgZ + 11.2 + Math.min(spread * 0.45, 9.0);
+          const subtleSwayX = Math.sin(elapsed * 0.7) * 0.45;
+
+          this.camera.position.lerp(new THREE.Vector3(subtleSwayX, camHeight, camBackZ), dt * 4.5);
+          this.camera.lookAt(0, 1.15, leadZ - 12);
+        } else if (this.cameraMode === "FINISH") {
+          const winZ = Math.min(this.car1.position.z, this.car2.position.z);
+          const orbitX = Math.sin(elapsed * 0.85) * 8.5;
+          const orbitZ = winZ + Math.cos(elapsed * 0.85) * 8.5;
+          this.camera.position.lerp(new THREE.Vector3(orbitX, 4.2, orbitZ), dt * 3.5);
+          this.camera.lookAt(0, 1.0, winZ);
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    /* =========================================================================
+       MODULE 5: 2D CELEBRATION CONFETTI SYSTEM
+       ========================================================================= */
+    class ConfettiManager {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext("2d");
+        this.pieces = [];
+        this.running = false;
+      }
+
+      start() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        this.pieces = [];
+        const colors = ["#ef4444", "#2563eb", "#38bdf8", "#facc15", "#10b981", "#f97316"];
+
+        for (let i = 0; i < 160; i++) {
+          this.pieces.push({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * -this.canvas.height,
+            w: 7 + Math.random() * 8,
+            h: 10 + Math.random() * 8,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vy: 2.6 + Math.random() * 4.6,
+            vx: (Math.random() - 0.5) * 2.6,
+            rot: Math.random() * Math.PI * 2,
+            vrot: (Math.random() - 0.5) * 0.14
+          });
+        }
+        this.running = true;
+        this.loop();
+      }
+
+      stop() {
+        this.running = false;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+
+      loop() {
+        if (!this.running) return;
+        requestAnimationFrame(() => this.loop());
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.pieces.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vrot;
+          if (p.y > this.canvas.height + 20) {
+            p.y = -15;
+            p.x = Math.random() * this.canvas.width;
+          }
+          this.ctx.save();
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate(p.rot);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          this.ctx.restore();
+        });
+      }
+    }
+
+    /* =========================================================================
+       MODULE 6: MAIN GAME ENGINE
+       ========================================================================= */
+    class GameEngine {
+      constructor(scene3D, soundEngine, confetti) {
+        this.scene3D = scene3D;
+        this.sound = soundEngine;
+        this.confetti = confetti;
+
+        this.settings = StorageManager.getSettings();
+        this.questionBank = StorageManager.getQuestions();
+
+        this.state = "MENU";
+        this.sessionQuestions = [];
+        this.currentQIndex = 0;
+        this.questionStartTimestamp = 0;
+        this.timerInterval = null;
+        this.advanceTimeout = null;
+
+        this.players = {
+          1: this.createInitialPlayerState(1),
+          2: this.createInitialPlayerState(2)
+        };
+      }
+
+      createInitialPlayerState(num) {
+        const name = num === 1 ? this.settings.p1Name : this.settings.p2Name;
+        const color = num === 1 ? this.settings.p1Color : this.settings.p2Color;
+        return {
+          num,
+          name,
+          color,
+          steps: 0,
+          correctCount: 0,
+          wrongCount: 0,
+          totalTimeMs: 0,
+          answeredCurrent: false,
+          selectedOption: null,
+          isCurrentCorrect: false,
+          finishTimestamp: null,
+          timeLeft: this.settings.timerSeconds,
+          categoryStats: {
+            "Sistem Pencernaan": 0,
+            "Sistem Pernapasan": 0,
+            "Sistem Tata Surya": 0,
+            "Jejak Pahlawan": 0
+          }
+        };
+      }
+
+      buildSessionQuestions() {
+        const all = StorageManager.getQuestions();
+        const quotas = this.settings.quotas || DEFAULT_SETTINGS.quotas;
+        const targetTotal = Math.max(4, Number(this.settings.questionCount) || 20);
+
+        let pool = [];
+        CATEGORIES.forEach((cat) => {
+          const catQuestions = this.shuffleArray(all.filter((q) => q.category === cat));
+          const wanted = Number(quotas[cat]) || 0;
+          pool.push(...catQuestions.slice(0, wanted));
+        });
+
+        const usedIds = new Set(pool.map((q) => q.id));
+        if (pool.length < targetTotal) {
+          const remaining = this.shuffleArray(all.filter((q) => !usedIds.has(q.id)));
+          pool.push(...remaining.slice(0, targetTotal - pool.length));
+        } else if (pool.length > targetTotal) {
+          pool = pool.slice(0, targetTotal);
+        }
+
+        if (pool.length === 0) {
+          pool = this.shuffleArray([...all]);
+        }
+
+        return this.shuffleArray(pool);
+      }
+
+      shuffleArray(arr) {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      formatMMSS(totalSec) {
+        const s = Math.max(0, Math.ceil(totalSec));
+        const mins = Math.floor(s / 60);
+        const secs = s % 60;
+        return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
+
+      startNewMatch() {
+        this.settings = StorageManager.getSettings();
+        this.questionBank = StorageManager.getQuestions();
+        this.sound.syncSettings(this.settings);
+
+        const p1InputName = document.getElementById("input-p1-name").value.trim() || this.settings.p1Name || "Pemain 1";
+        const p2InputName = document.getElementById("input-p2-name").value.trim() || this.settings.p2Name || "Pemain 2";
+
+        this.players[1] = this.createInitialPlayerState(1);
+        this.players[2] = this.createInitialPlayerState(2);
+        this.players[1].name = p1InputName;
+        this.players[2].name = p2InputName;
+
+        this.sessionQuestions = this.buildSessionQuestions();
+        this.currentQIndex = 0;
+
+        const trackLen = Number(this.settings.trackLength) || 12;
+        this.scene3D.animSpeedMultiplier = Number(this.settings.animSpeed) || 1.25;
+        this.scene3D.configureTrackLength(trackLen);
+        this.scene3D.updateCarColors(this.settings.p1Color, this.settings.p2Color);
+        this.scene3D.resetCarsToStart();
+        this.scene3D.setCameraMode("RACING");
+
+        // Switch UI to Split-Screen Race Layout
+        document.getElementById("landing-overlay").classList.add("hidden");
+        document.getElementById("modal-results").classList.add("hidden");
+        document.getElementById("race-hud-overlay").classList.remove("hidden");
+        document.getElementById("quiz-panels-section").classList.remove("hidden");
+        document.getElementById("btn-exit-race").classList.remove("hidden");
+        document.getElementById("btn-exit-race").classList.add("flex");
+
+        const viewportSec = document.getElementById("race-viewport-section");
+        viewportSec.classList.remove("h-full");
+        viewportSec.classList.add("h-[54%]", "sm:h-[57%]");
+
+        setTimeout(() => this.scene3D.handleResize(), 60);
+        setTimeout(() => this.scene3D.handleResize(), 520);
+
+        document.getElementById("hud-p1-name").textContent = this.players[1].name;
+        document.getElementById("hud-p2-name").textContent = this.players[2].name;
+        document.getElementById("p1-panel-name").textContent = this.players[1].name;
+        document.getElementById("p2-panel-name").textContent = this.players[2].name;
+        document.getElementById("hud-q-total").textContent = this.sessionQuestions.length;
+        document.querySelectorAll(".p-q-total").forEach((el) => (el.textContent = this.sessionQuestions.length));
+
+        this.updateRaceTelemetryHUD();
+        this.runStartCountdown();
+      }
+
+      runStartCountdown() {
+        this.state = "COUNTDOWN";
+        const overlay = document.getElementById("start-countdown-overlay");
+        const textEl = document.getElementById("start-countdown-text");
+        overlay.classList.remove("hidden");
+
+        let count = 3;
+        textEl.textContent = count;
+        this.sound.playCountdownTick(false);
+
+        const cdInterval = setInterval(() => {
+          count--;
+          if (count > 0) {
+            textEl.textContent = count;
+            textEl.classList.remove("animate-pop");
+            void textEl.offsetWidth;
+            textEl.classList.add("animate-pop");
+            this.sound.playCountdownTick(false);
+          } else if (count === 0) {
+            textEl.textContent = "GO! 🏁";
+            textEl.classList.remove("animate-pop");
+            void textEl.offsetWidth;
+            textEl.classList.add("animate-pop");
+            this.sound.playCountdownTick(true);
+          } else {
+            clearInterval(cdInterval);
+            overlay.classList.add("hidden");
+            this.state = "RACING";
+            this.sound.startMusic();
+            this.loadQuestion(0);
+          }
+        }, 720);
+      }
+
+      loadQuestion(index) {
+        if (this.advanceTimeout) {
+          clearTimeout(this.advanceTimeout);
+          this.advanceTimeout = null;
+        }
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+
+        if (index >= this.sessionQuestions.length) {
+          this.finishMatch();
+          return;
+        }
+
+        this.currentQIndex = index;
+        const q = this.sessionQuestions[index];
+        const maxTime = Number(this.settings.timerSeconds) || 30;
+        this.questionStartTimestamp = performance.now();
+
+        document.getElementById("hud-q-current").textContent = index + 1;
+        document.getElementById("hud-center-clock").textContent = this.formatMMSS(maxTime);
+
+        [1, 2].forEach((pNum) => {
+          const p = this.players[pNum];
+          p.answeredCurrent = false;
+          p.selectedOption = null;
+          p.isCurrentCorrect = false;
+          p.timeLeft = maxTime;
+
+          document.getElementById(`p${pNum}-race-toast`).classList.add("hidden");
+
+          document.getElementById(`p${pNum}-q-num`).textContent = index + 1;
+          document.getElementById(`p${pNum}-category-badge`).textContent = q.category;
+          document.getElementById(`p${pNum}-category-mobile`).textContent = q.category;
+          document.getElementById(`p${pNum}-question-text`).textContent = q.question;
+          document.getElementById(`p${pNum}-status-indicator`).textContent = "Pilih jawaban yang benar!";
+          document.getElementById(`p${pNum}-status-indicator`).className = pNum === 1 ? "text-rose-600 ml-auto" : "text-blue-600 ml-auto";
+
+          document.getElementById(`p${pNum}-timer`).textContent = maxTime;
+          document.getElementById(`p${pNum}-timer-bar`).style.width = "100%";
+
+          const optButtons = document.querySelectorAll(`.p${pNum}-opt`);
+          optButtons.forEach((btn) => {
+            const optKey = btn.getAttribute("data-option");
+            btn.disabled = false;
+            btn.querySelector(".opt-text").textContent = q.options[optKey];
+            btn.className = `quiz-option-pill p${pNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer`;
+            const letterBadge = btn.querySelector("span:first-child");
+            letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-200 border border-slate-300 text-slate-800 font-racing font-black text-xs flex items-center justify-center shrink-0";
+          });
+        });
+
+        this.timerInterval = setInterval(() => {
+          if (this.state !== "RACING") return;
+          let bothDone = true;
+          let maxRemaining = 0;
+
+          [1, 2].forEach((pNum) => {
+            const p = this.players[pNum];
+            if (!p.answeredCurrent) {
+              p.timeLeft = Math.max(0, +(p.timeLeft - 0.25).toFixed(2));
+              maxRemaining = Math.max(maxRemaining, p.timeLeft);
+              document.getElementById(`p${pNum}-timer`).textContent = Math.ceil(p.timeLeft);
+              document.getElementById(`p${pNum}-timer-bar`).style.width = `${(p.timeLeft / maxTime) * 100}%`;
+
+              if (p.timeLeft <= 0) {
+                this.handlePlayerTimeout(pNum);
+              } else {
+                bothDone = false;
+              }
+            }
+          });
+
+          document.getElementById("hud-center-clock").textContent = this.formatMMSS(maxRemaining);
+
+          if (bothDone) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+          }
+        }, 250);
+      }
+
+      submitAnswer(playerNum, chosenOption) {
+        if (this.state !== "RACING") return;
+        const player = this.players[playerNum];
+        if (player.answeredCurrent) return;
+
+        const q = this.sessionQuestions[this.currentQIndex];
+        const elapsedMs = performance.now() - this.questionStartTimestamp;
+        player.answeredCurrent = true;
+        player.selectedOption = chosenOption;
+        player.totalTimeMs += elapsedMs;
+
+        const isCorrect = chosenOption === q.answer;
+        player.isCurrentCorrect = isCorrect;
+
+        const trackLen = Number(this.settings.trackLength) || 12;
+
+        if (isCorrect) {
+          player.correctCount++;
+          player.steps++;
+          if (player.categoryStats[q.category] !== undefined) {
+            player.categoryStats[q.category]++;
+          }
+          if (player.steps >= trackLen && !player.finishTimestamp) {
+            player.finishTimestamp = performance.now();
+          }
+
+          this.scene3D.advanceCar(playerNum, player.steps);
+          this.sound.playCorrect();
+          this.showPlayerFeedback(playerNum, true, "BENAR! MOBIL MELAJU!");
+        } else {
+          player.wrongCount++;
+          this.scene3D.triggerWrongShake(playerNum);
+          this.sound.playWrong();
+          this.showPlayerFeedback(playerNum, false, "KURANG TEPAT! POSISI TETAP.");
+        }
+
+        this.lockPlayerPanelUI(playerNum, chosenOption, q.answer, isCorrect);
+        this.updateRaceTelemetryHUD();
+        this.checkProgressionOrFinish();
+      }
+
+      handlePlayerTimeout(playerNum) {
+        const player = this.players[playerNum];
+        if (player.answeredCurrent) return;
+
+        const q = this.sessionQuestions[this.currentQIndex];
+        player.answeredCurrent = true;
+        player.selectedOption = null;
+        player.isCurrentCorrect = false;
+        player.wrongCount++;
+        player.totalTimeMs += (Number(this.settings.timerSeconds) || 30) * 1000;
+
+        this.scene3D.triggerWrongShake(playerNum);
+        this.sound.playWrong();
+        this.showPlayerFeedback(playerNum, false, "WAKTU HABIS! POSISI TETAP.");
+        this.lockPlayerPanelUI(playerNum, null, q.answer, false);
+        this.checkProgressionOrFinish();
+      }
+
+      lockPlayerPanelUI(playerNum, chosenOption, correctOption, isCorrect) {
+        const statusEl = document.getElementById(`p${playerNum}-status-indicator`);
+        const otherPlayer = this.players[playerNum === 1 ? 2 : 1];
+
+        if (isCorrect) {
+          statusEl.textContent = otherPlayer.answeredCurrent ? "✔ Benar! Lanjut..." : "✔ Benar! Menunggu lawan...";
+          statusEl.className = "text-emerald-600 font-extrabold ml-auto";
+        } else {
+          statusEl.textContent = otherPlayer.answeredCurrent ? "✖ Salah! Lanjut..." : "✖ Salah! Menunggu lawan...";
+          statusEl.className = "text-rose-600 font-extrabold ml-auto";
+        }
+
+        const buttons = document.querySelectorAll(`.p${playerNum}-opt`);
+        buttons.forEach((btn) => {
+          btn.disabled = true;
+          const opt = btn.getAttribute("data-option");
+          const letterBadge = btn.querySelector("span:first-child");
+
+          if (opt === chosenOption) {
+            if (isCorrect) {
+              // Vibrant Emerald Green Pill matching "D | Alveolus" in Reference Screenshot!
+              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-extrabold !bg-gradient-to-b !from-lime-500 !to-green-600 !border-green-800 !text-white shadow-md`;
+              letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white text-green-700 font-racing font-black text-xs flex items-center justify-center shrink-0";
+            } else {
+              btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-extrabold !bg-gradient-to-b !from-rose-500 !to-red-600 !border-red-800 !text-white shadow-md`;
+              letterBadge.className = "w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white text-red-700 font-racing font-black text-xs flex items-center justify-center shrink-0";
+            }
+          } else {
+            btn.className = `quiz-option-pill p${playerNum}-opt text-left flex items-center gap-2 p-1.5 sm:p-2 rounded-xl text-xs sm:text-sm font-bold opacity-55`;
+          }
+        });
+      }
+
+      showPlayerFeedback(playerNum, isSuccess, message) {
+        const toast = document.getElementById(`p${playerNum}-race-toast`);
+        toast.textContent = message;
+        toast.classList.remove("hidden", "animate-pop");
+        void toast.offsetWidth;
+
+        if (isSuccess) {
+          toast.className = "animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2 bg-emerald-600/95 border-emerald-200 text-white";
+        } else {
+          toast.className = "animate-pop px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl font-racing font-black text-xs sm:text-base text-center shadow-2xl border-2 bg-rose-700/95 border-rose-200 text-white";
+        }
+      }
+
+      updateRaceTelemetryHUD() {
+        const p1 = this.players[1];
+        const p2 = this.players[2];
+        const trackLen = Number(this.settings.trackLength) || 12;
+
+        document.getElementById("hud-p1-steps").textContent = p1.steps;
+        document.getElementById("hud-p2-steps").textContent = p2.steps;
+
+        const p1PosEl = document.getElementById("hud-p1-pos");
+        const p2PosEl = document.getElementById("hud-p2-pos");
+        if (p1.steps > p2.steps) {
+          p1PosEl.textContent = "POS 1";
+          p2PosEl.textContent = "POS 2";
+        } else if (p2.steps > p1.steps) {
+          p2PosEl.textContent = "POS 1";
+          p1PosEl.textContent = "POS 2";
+        } else {
+          p1PosEl.textContent = "SERI";
+          p2PosEl.textContent = "SERI";
+        }
+
+        const pct1 = Math.min(100, (p1.steps / trackLen) * 100);
+        const pct2 = Math.min(100, (p2.steps / trackLen) * 100);
+
+        document.getElementById("hud-p1-mini-bar").style.width = `${pct1}%`;
+        document.getElementById("hud-p2-mini-bar").style.width = `${pct2}%`;
+        document.getElementById("minimap-p1-bar").style.width = `${pct1}%`;
+        document.getElementById("minimap-p2-bar").style.width = `${pct2}%`;
+        document.getElementById("minimap-p1-dot").style.left = `${pct1}%`;
+        document.getElementById("minimap-p2-dot").style.left = `${pct2}%`;
+      }
+
+      checkProgressionOrFinish() {
+        const p1 = this.players[1];
+        const p2 = this.players[2];
+        const trackLen = Number(this.settings.trackLength) || 12;
+        const someoneFinished = p1.steps >= trackLen || p2.steps >= trackLen;
+
+        if (p1.answeredCurrent && p2.answeredCurrent) {
+          if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+          }
+
+          this.advanceTimeout = setTimeout(() => {
+            if (someoneFinished || this.currentQIndex + 1 >= this.sessionQuestions.length) {
+              this.finishMatch();
+            } else {
+              this.loadQuestion(this.currentQIndex + 1);
+            }
+          }, 1250);
+        } else if (someoneFinished) {
+          if (!this.advanceTimeout) {
+            this.advanceTimeout = setTimeout(() => {
+              if (this.timerInterval) {
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
+              }
+              this.finishMatch();
+            }, 2000);
+          }
+        }
+      }
+
+      finishMatch() {
+        if (this.state === "FINISHED") return;
+        this.state = "FINISHED";
+
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        if (this.advanceTimeout) clearTimeout(this.advanceTimeout);
+        this.sound.stopMusic();
+        this.sound.playVictory();
+        this.scene3D.setCameraMode("FINISH");
+        this.confetti.start();
+
+        const p1 = this.players[1];
+        const p2 = this.players[2];
+        const trackLen = Number(this.settings.trackLength) || 12;
+
+        let winner = 0;
+        if (p1.steps >= trackLen && p2.steps >= trackLen) {
+          if (p1.finishTimestamp && p2.finishTimestamp && Math.abs(p1.finishTimestamp - p2.finishTimestamp) > 5) {
+            winner = p1.finishTimestamp < p2.finishTimestamp ? 1 : 2;
+          } else {
+            winner = 0;
+          }
+        } else if (p1.steps > p2.steps) {
+          winner = 1;
+        } else if (p2.steps > p1.steps) {
+          winner = 2;
+        } else {
+          winner = 0;
+        }
+
+        const badgePill = document.getElementById("result-badge-pill");
+        const titleEl = document.getElementById("result-winner-title");
+        const subEl = document.getElementById("result-winner-subtitle");
+
+        if (winner === 1) {
+          badgePill.textContent = "WINNER";
+          titleEl.textContent = p1.name;
+          subEl.textContent = `Selamat ${p1.name}! Mobilmu berhasil melintasi garis finis tercepat!`;
+          document.getElementById("res-p1-rank").textContent = "WINNER 🏆";
+          document.getElementById("res-p2-rank").textContent = "POSISI 2";
+        } else if (winner === 2) {
+          badgePill.textContent = "WINNER";
+          titleEl.textContent = p2.name;
+          subEl.textContent = `Selamat ${p2.name}! Mobilmu berhasil melintasi garis finis tercepat!`;
+          document.getElementById("res-p2-rank").textContent = "WINNER 🏆";
+          document.getElementById("res-p1-rank").textContent = "POSISI 2";
+        } else {
+          badgePill.textContent = "SERI";
+          titleEl.textContent = "AMAZING! PERTANDINGAN IMBANG!";
+          subEl.textContent = `${p1.name} dan ${p2.name} mencatat skor dan kecepatan yang seimbang!`;
+          document.getElementById("res-p1-rank").textContent = "IMBANG";
+          document.getElementById("res-p2-rank").textContent = "IMBANG";
+        }
+
+        [1, 2].forEach((num) => {
+          const pl = this.players[num];
+          const totalAnswered = Math.max(1, pl.correctCount + pl.wrongCount);
+          const acc = Math.round((pl.correctCount / totalAnswered) * 100);
+          const totalSec = Math.round(pl.totalTimeMs / 1000);
+          const mm = String(Math.floor(totalSec / 60)).padStart(2, "0");
+          const ss = String(totalSec % 60).padStart(2, "0");
+
+          document.getElementById(`res-p${num}-name`).textContent = pl.name;
+          document.getElementById(`res-p${num}-correct`).textContent = pl.correctCount;
+          document.getElementById(`res-p${num}-wrong`).textContent = pl.wrongCount;
+          document.getElementById(`res-p${num}-accuracy`).textContent = `${acc}%`;
+          document.getElementById(`res-p${num}-steps`).textContent = pl.steps;
+          document.getElementById(`res-p${num}-time`).textContent = `${mm}:${ss}`;
+        });
+
+        // Populate Center Category Recap Table (Matching Bottom-Right Screenshot!)
+        const tbody = document.getElementById("result-category-tbody");
+        tbody.innerHTML = "";
+        CATEGORIES.forEach((cat) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="py-2 px-2.5 text-left flex items-center gap-1.5">
+              <span>${CATEGORY_ICONS[cat] || "📘"}</span>
+              <span class="truncate">${cat}</span>
+            </td>
+            <td class="py-2 px-2 text-center font-racing font-black text-rose-600">${p1.categoryStats[cat] || 0}</td>
+            <td class="py-2 px-2 text-center font-racing font-black text-blue-600">${p2.categoryStats[cat] || 0}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        const totalTr = document.createElement("tr");
+        totalTr.className = "bg-slate-800 text-white font-black";
+        totalTr.innerHTML = `
+          <td class="py-2 px-2.5 text-left font-racing text-amber-300">TOTAL</td>
+          <td class="py-2 px-2 text-center font-racing bg-amber-500 text-slate-950">${p1.correctCount}</td>
+          <td class="py-2 px-2 text-center font-racing bg-blue-700 text-white">${p2.correctCount}</td>
+        `;
+        tbody.appendChild(totalTr);
+
+        setTimeout(() => {
+          document.getElementById("modal-results").classList.remove("hidden");
+        }, 650);
+      }
+
+      returnToMainMenu() {
+        this.state = "MENU";
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        if (this.advanceTimeout) clearTimeout(this.advanceTimeout);
+        this.sound.stopMusic();
+        this.confetti.stop();
+
+        document.getElementById("modal-results").classList.add("hidden");
+        document.getElementById("race-hud-overlay").classList.add("hidden");
+        document.getElementById("quiz-panels-section").classList.add("hidden");
+        document.getElementById("btn-exit-race").classList.add("hidden");
+        document.getElementById("btn-exit-race").classList.remove("flex");
+        document.getElementById("landing-overlay").classList.remove("hidden");
+
+        const viewportSec = document.getElementById("race-viewport-section");
+        viewportSec.classList.remove("h-[54%]", "sm:h-[57%]");
+        viewportSec.classList.add("h-full");
+
+        this.scene3D.setCameraMode("SHOWCASE");
+        setTimeout(() => this.scene3D.handleResize(), 60);
+        setTimeout(() => this.scene3D.handleResize(), 520);
+        syncLandingMetadata();
+      }
+    }
+
+    /* =========================================================================
+       MODULE 7: TEACHER SETTINGS & EXCEL IMPORT/EXPORT MANAGER
+       ========================================================================= */
+    class TeacherManager {
+      constructor(scene3D, soundEngine) {
+        this.scene3D = scene3D;
+        this.sound = soundEngine;
+        this.activeFilter = "ALL";
+        this.pendingImportedQuestions = [];
+        this.bindEvents();
+      }
+
+      bindEvents() {
+        document.getElementById("btn-open-teacher").addEventListener("click", () => {
+          document.getElementById("input-teacher-password").value = "";
+          document.getElementById("password-error-msg").classList.add("hidden");
+          document.getElementById("modal-password").classList.remove("hidden");
+          setTimeout(() => document.getElementById("input-teacher-password").focus(), 80);
+        });
+
+        const closePwd = () => document.getElementById("modal-password").classList.add("hidden");
+        document.getElementById("btn-close-password").addEventListener("click", closePwd);
+        document.getElementById("btn-cancel-password").addEventListener("click", closePwd);
+
+        document.getElementById("form-teacher-password").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const pwd = document.getElementById("input-teacher-password").value;
+          if (pwd === "Inovatif") {
+            closePwd();
+            this.openDashboard();
+          } else {
+            const errEl = document.getElementById("password-error-msg");
+            errEl.textContent = "Password tidak sesuai. Silakan coba kembali.";
+            errEl.classList.remove("hidden");
+            this.sound.playWrong();
+          }
+        });
+
+        document.getElementById("btn-teacher-back-game").addEventListener("click", () => {
+          document.getElementById("modal-teacher-dashboard").classList.add("hidden");
+          syncLandingMetadata();
+        });
+
+        // Left Sidebar Tab Switching
+        document.querySelectorAll(".teacher-tab").forEach((tabBtn) => {
+          tabBtn.addEventListener("click", () => {
+            document.querySelectorAll(".teacher-tab").forEach((b) => {
+              b.className = "teacher-tab flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-bold bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-sky-500/40 whitespace-nowrap cursor-pointer";
+            });
+            tabBtn.className = "teacher-tab active flex items-center gap-2.5 px-3.5 py-2.5 sm:py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-sky-500 to-cyan-500 text-white border-2 border-cyan-200 shadow-lg whitespace-nowrap cursor-pointer";
+
+            const targetId = tabBtn.getAttribute("data-tab");
+            document.querySelectorAll(".teacher-tab-pane").forEach((pane) => pane.classList.add("hidden"));
+            document.getElementById(targetId).classList.remove("hidden");
+          });
+        });
+
+        // Filter Category Select Dropdown
+        document.getElementById("select-category-filter").addEventListener("change", (e) => {
+          this.activeFilter = e.target.value;
+          this.renderQuestionTable();
+        });
+
+        document.querySelectorAll(".quota-input").forEach((inp) => {
+          inp.addEventListener("change", () => this.saveQuotasFromInputs());
+        });
+
+        document.getElementById("btn-add-new-question").addEventListener("click", () => {
+          this.openQuestionEditor(-1);
+        });
+
+        document.getElementById("btn-cancel-edit-q").addEventListener("click", () => {
+          document.getElementById("question-editor-card").classList.add("hidden");
+        });
+
+        document.getElementById("btn-save-question").addEventListener("click", () => {
+          this.saveQuestionFromEditor();
+        });
+
+        document.getElementById("btn-reset-default-questions").addEventListener("click", () => {
+          StorageManager.saveQuestions(DEFAULT_QUESTIONS);
+          this.renderQuestionTable();
+          showToast("Bank soal dikembalikan ke 20 soal bawaan IPAS Kelas 6!");
+        });
+
+        document.getElementById("btn-download-template-xlsx").addEventListener("click", () => {
+          this.downloadExcelTemplate(true);
+        });
+
+        document.getElementById("btn-export-current-xlsx").addEventListener("click", () => {
+          this.downloadExcelTemplate(false);
+        });
+
+        document.getElementById("input-upload-xlsx").addEventListener("change", (e) => {
+          if (e.target.files && e.target.files[0]) {
+            this.handleExcelUpload(e.target.files[0]);
+            e.target.value = "";
+          }
+        });
+
+        document.getElementById("btn-import-append").addEventListener("click", () => {
+          if (this.pendingImportedQuestions.length === 0) return;
+          const current = StorageManager.getQuestions();
+          StorageManager.saveQuestions([...current, ...this.pendingImportedQuestions]);
+          this.renderQuestionTable();
+          document.getElementById("upload-preview-section").classList.add("hidden");
+          showToast(`Berhasil menambahkan ${this.pendingImportedQuestions.length} soal baru!`);
+        });
+
+        document.getElementById("btn-import-replace").addEventListener("click", () => {
+          if (this.pendingImportedQuestions.length === 0) return;
+          StorageManager.saveQuestions(this.pendingImportedQuestions);
+          this.renderQuestionTable();
+          document.getElementById("upload-preview-section").classList.add("hidden");
+          showToast(`Bank soal diganti dengan ${this.pendingImportedQuestions.length} soal dari Excel!`);
+        });
+
+        document.getElementById("btn-save-settings").addEventListener("click", () => {
+          this.saveGameSettings();
+        });
+      }
+
+      openDashboard() {
+        const settings = StorageManager.getSettings();
+        document.getElementById("set-p1-name").value = settings.p1Name;
+        document.getElementById("set-p2-name").value = settings.p2Name;
+        document.getElementById("set-p1-color").value = settings.p1Color;
+        document.getElementById("set-p2-color").value = settings.p2Color;
+        document.getElementById("set-timer-seconds").value = settings.timerSeconds;
+        document.getElementById("set-question-count").value = settings.questionCount;
+        document.getElementById("set-track-length").value = settings.trackLength;
+        document.getElementById("set-anim-speed").value = String(settings.animSpeed);
+        document.getElementById("set-music-enabled").checked = settings.musicEnabled;
+        document.getElementById("set-sfx-enabled").checked = settings.sfxEnabled;
+
+        document.getElementById("quota-pencernaan").value = settings.quotas["Sistem Pencernaan"] ?? 5;
+        document.getElementById("quota-pernapasan").value = settings.quotas["Sistem Pernapasan"] ?? 5;
+        document.getElementById("quota-tatasurya").value = settings.quotas["Sistem Tata Surya"] ?? 5;
+        document.getElementById("quota-pahlawan").value = settings.quotas["Jejak Pahlawan"] ?? 5;
+        this.updateQuotaBadge();
+
+        this.renderQuestionTable();
+        document.getElementById("modal-teacher-dashboard").classList.remove("hidden");
+      }
+
+      saveQuotasFromInputs() {
+        const settings = StorageManager.getSettings();
+        settings.quotas = {
+          "Sistem Pencernaan": Math.max(0, Number(document.getElementById("quota-pencernaan").value) || 0),
+          "Sistem Pernapasan": Math.max(0, Number(document.getElementById("quota-pernapasan").value) || 0),
+          "Sistem Tata Surya": Math.max(0, Number(document.getElementById("quota-tatasurya").value) || 0),
+          "Jejak Pahlawan": Math.max(0, Number(document.getElementById("quota-pahlawan").value) || 0)
+        };
+        const sum = Object.values(settings.quotas).reduce((a, b) => a + b, 0);
+        if (sum > 0) {
+          settings.questionCount = sum;
+          document.getElementById("set-question-count").value = sum;
+        }
+        StorageManager.saveSettings(settings);
+        this.updateQuotaBadge();
+      }
+
+      updateQuotaBadge() {
+        const q1 = Number(document.getElementById("quota-pencernaan").value) || 0;
+        const q2 = Number(document.getElementById("quota-pernapasan").value) || 0;
+        const q3 = Number(document.getElementById("quota-tatasurya").value) || 0;
+        const q4 = Number(document.getElementById("quota-pahlawan").value) || 0;
+        document.getElementById("quota-summary-badge").textContent = `Total Aktif: ${q1 + q2 + q3 + q4} Soal`;
+      }
+
+      getCategoryBadgeStyle(cat) {
+        if (cat === "Sistem Pencernaan") return "bg-amber-100 text-amber-900 border-amber-300";
+        if (cat === "Sistem Pernapasan") return "bg-cyan-100 text-cyan-900 border-cyan-300";
+        if (cat === "Sistem Tata Surya") return "bg-indigo-100 text-indigo-900 border-indigo-300";
+        return "bg-rose-100 text-rose-900 border-rose-300";
+      }
+
+      renderQuestionTable() {
+        const questions = StorageManager.getQuestions();
+        document.getElementById("tab-q-count").textContent = questions.length;
+
+        const tbody = document.getElementById("teacher-question-tbody");
+        tbody.innerHTML = "";
+
+        questions.forEach((q, realIndex) => {
+          if (this.activeFilter !== "ALL" && q.category !== this.activeFilter) return;
+
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition";
+
+          tr.innerHTML = `
+            <td class="p-3 text-center font-extrabold text-slate-700">${realIndex + 1}</td>
+            <td class="p-3">
+              <span class="inline-block px-2.5 py-1 rounded-lg border text-xs font-extrabold ${this.getCategoryBadgeStyle(q.category)}">
+                ${q.category}
+              </span>
+            </td>
+            <td class="p-3">
+              <div class="font-bold text-slate-900 mb-1">${q.question}</div>
+              <div class="flex flex-wrap gap-1.5 text-[11px] text-slate-600">
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-extrabold">Kunci: ${q.answer} (${q.options[q.answer]})</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">${q.difficulty}</span>
+              </div>
+            </td>
+            <td class="p-3">
+              <div class="flex items-center justify-center gap-1">
+                <button type="button" data-action="up" data-idx="${realIndex}" title="Naik" class="q-act-btn w-7 h-7 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs cursor-pointer">▲</button>
+                <button type="button" data-action="down" data-idx="${realIndex}" title="Turun" class="q-act-btn w-7 h-7 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs cursor-pointer">▼</button>
+                <button type="button" data-action="edit" data-idx="${realIndex}" title="Edit Soal" class="q-act-btn w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow cursor-pointer">✏️</button>
+                <button type="button" data-action="delete" data-idx="${realIndex}" title="Hapus Soal" class="q-act-btn w-8 h-8 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow cursor-pointer">🗑️</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll(".q-act-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            this.handleQuestionAction(btn.getAttribute("data-action"), Number(btn.getAttribute("data-idx")));
+          });
+        });
+      }
+
+      handleQuestionAction(action, idx) {
+        const list = StorageManager.getQuestions();
+        if (action === "edit") {
+          this.openQuestionEditor(idx);
+        } else if (action === "delete") {
+          if (list.length <= 4) {
+            showToast("Minimal harus tersedia 4 soal di dalam bank soal.");
+            return;
+          }
+          list.splice(idx, 1);
+          StorageManager.saveQuestions(list);
+          this.renderQuestionTable();
+          showToast("Soal berhasil dihapus.");
+        } else if (action === "up" && idx > 0) {
+          [list[idx - 1], list[idx]] = [list[idx], list[idx - 1]];
+          StorageManager.saveQuestions(list);
+          this.renderQuestionTable();
+        } else if (action === "down" && idx < list.length - 1) {
+          [list[idx + 1], list[idx]] = [list[idx], list[idx + 1]];
+          StorageManager.saveQuestions(list);
+          this.renderQuestionTable();
+        }
+      }
+
+      openQuestionEditor(idx) {
+        const editor = document.getElementById("question-editor-card");
+        document.getElementById("edit-q-index").value = idx;
+
+        if (idx === -1) {
+          document.getElementById("editor-form-title").textContent = "Tambah Soal Baru";
+          document.getElementById("edit-q-category").value = "Sistem Pencernaan";
+          document.getElementById("edit-q-difficulty").value = "Mudah";
+          document.getElementById("edit-q-answer").value = "A";
+          document.getElementById("edit-q-text").value = "";
+          document.getElementById("edit-q-optA").value = "";
+          document.getElementById("edit-q-optB").value = "";
+          document.getElementById("edit-q-optC").value = "";
+          document.getElementById("edit-q-optD").value = "";
+        } else {
+          const q = StorageManager.getQuestions()[idx];
+          document.getElementById("editor-form-title").textContent = `Edit Soal #${idx + 1}`;
+          document.getElementById("edit-q-category").value = q.category;
+          document.getElementById("edit-q-difficulty").value = q.difficulty;
+          document.getElementById("edit-q-answer").value = q.answer;
+          document.getElementById("edit-q-text").value = q.question;
+          document.getElementById("edit-q-optA").value = q.options.A;
+          document.getElementById("edit-q-optB").value = q.options.B;
+          document.getElementById("edit-q-optC").value = q.options.C;
+          document.getElementById("edit-q-optD").value = q.options.D;
+        }
+
+        editor.classList.remove("hidden");
+        editor.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+
+      saveQuestionFromEditor() {
+        const idx = Number(document.getElementById("edit-q-index").value);
+        const category = document.getElementById("edit-q-category").value;
+        const difficulty = document.getElementById("edit-q-difficulty").value;
+        const answer = document.getElementById("edit-q-answer").value;
+        const question = document.getElementById("edit-q-text").value.trim();
+        const A = document.getElementById("edit-q-optA").value.trim();
+        const B = document.getElementById("edit-q-optB").value.trim();
+        const C = document.getElementById("edit-q-optC").value.trim();
+        const D = document.getElementById("edit-q-optD").value.trim();
+
+        if (!question || !A || !B || !C || !D) {
+          showToast("Harap lengkapi pertanyaan dan seluruh pilihan A, B, C, D!");
+          return;
+        }
+
+        const list = StorageManager.getQuestions();
+        const item = {
+          id: idx === -1 ? `q-${Date.now()}` : list[idx].id,
+          category,
+          difficulty,
+          question,
+          options: { A, B, C, D },
+          answer
+        };
+
+        if (idx === -1) {
+          list.push(item);
+          showToast("Soal baru berhasil ditambahkan!");
+        } else {
+          list[idx] = item;
+          showToast(`Soal #${idx + 1} berhasil diperbarui!`);
+        }
+
+        StorageManager.saveQuestions(list);
+        document.getElementById("question-editor-card").classList.add("hidden");
+        this.renderQuestionTable();
+      }
+
+      downloadExcelTemplate(isBlankTemplate) {
+        if (typeof XLSX === "undefined") {
+          showToast("Library SheetJS belum siap. Periksa koneksi internet.");
+          return;
+        }
+
+        const sourceData = isBlankTemplate
+          ? [
+              {
+                No: 1,
+                Kategori: "Sistem Pencernaan",
+                Pertanyaan: "Enzim amilase (ptialin) di dalam rongga mulut berfungsi untuk mengubah zat tepung menjadi...",
+                "Pilihan A": "Zat gula sederhana",
+                "Pilihan B": "Asam amino",
+                "Pilihan C": "Asam lemak",
+                "Pilihan D": "Vitamin larut air",
+                "Kunci Jawaban": "A",
+                "Tingkat Kesulitan": "Mudah"
+              },
+              {
+                No: 2,
+                Kategori: "Sistem Pernapasan",
+                Pertanyaan: "Tempat terjadinya pertukaran oksigen dan karbon dioksida di dalam paru-paru adalah...",
+                "Pilihan A": "Trakea",
+                "Pilihan B": "Alveolus",
+                "Pilihan C": "Bronkus",
+                "Pilihan D": "Faring",
+                "Kunci Jawaban": "B",
+                "Tingkat Kesulitan": "Sedang"
+              },
+              {
+                No: 3,
+                Kategori: "Sistem Tata Surya",
+                Pertanyaan: "Planet terbesar dalam sistem tata surya yang termasuk kelompok planet luar adalah...",
+                "Pilihan A": "Mars",
+                "Pilihan B": "Venus",
+                "Pilihan C": "Jupiter",
+                "Pilihan D": "Merkurius",
+                "Kunci Jawaban": "C",
+                "Tingkat Kesulitan": "Sulit"
+              },
+              {
+                No: 4,
+                Kategori: "Jejak Pahlawan",
+                Pertanyaan: "Semboyan pendidikan Ki Hajar Dewantara yang berarti di belakang memberi dorongan adalah...",
+                "Pilihan A": "Ing Ngarso Sung Tulodo",
+                "Pilihan B": "Ing Madyo Mangun Karso",
+                "Pilihan C": "Bhinneka Tunggal Ika",
+                "Pilihan D": "Tut Wuri Handayani",
+                "Kunci Jawaban": "D",
+                "Tingkat Kesulitan": "Mudah"
+              }
+            ]
+          : StorageManager.getQuestions().map((q, i) => ({
+              No: i + 1,
+              Kategori: q.category,
+              Pertanyaan: q.question,
+              "Pilihan A": q.options.A,
+              "Pilihan B": q.options.B,
+              "Pilihan C": q.options.C,
+              "Pilihan D": q.options.D,
+              "Kunci Jawaban": q.answer,
+              "Tingkat Kesulitan": q.difficulty
+            }));
+
+        const instructionsData = [
+          { Kolom: "No", Aturan: "Nomor urut soal (1, 2, 3, ...)" },
+          { Kolom: "Kategori", Aturan: "Wajib salah satu dari: Sistem Pencernaan | Sistem Pernapasan | Sistem Tata Surya | Jejak Pahlawan" },
+          { Kolom: "Pertanyaan", Aturan: "Teks soal pilihan ganda IPAS Kelas 6 SD (tidak boleh kosong)" },
+          { Kolom: "Pilihan A - D", Aturan: "Keempat opsi jawaban wajib diisi lengkap" },
+          { Kolom: "Kunci Jawaban", Aturan: "Isi dengan satu huruf kapital: A, B, C, atau D" },
+          { Kolom: "Tingkat Kesulitan", Aturan: "Isi dengan: Mudah, Sedang, atau Sulit" }
+        ];
+
+        const wb = XLSX.utils.book_new();
+        const wsQuestions = XLSX.utils.json_to_sheet(sourceData);
+        const wsGuide = XLSX.utils.json_to_sheet(instructionsData);
+
+        wsQuestions["!cols"] = [
+          { wch: 5 }, { wch: 22 }, { wch: 55 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 25 }, { wch: 15 }, { wch: 18 }
+        ];
+        wsGuide["!cols"] = [{ wch: 22 }, { wch: 85 }];
+
+        XLSX.utils.book_append_sheet(wb, wsQuestions, "Bank_Soal");
+        XLSX.utils.book_append_sheet(wb, wsGuide, "Petunjuk_Pengisian");
+
+        const fileName = isBlankTemplate
+          ? "Template_Soal_Science_Racing_3D.xlsx"
+          : "Export_Bank_Soal_IPAS_Kelas6.xlsx";
+        XLSX.writeFile(wb, fileName);
+        showToast(`File ${fileName} berhasil diunduh!`);
+      }
+
+      handleExcelUpload(file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+            this.validateAndPreviewExcelRows(rows);
+          } catch (err) {
+            const valBox = document.getElementById("upload-validation-box");
+            valBox.className = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-800 text-xs font-bold";
+            valBox.textContent = "Gagal membaca file Excel. Pastikan format file adalah .xlsx atau .xls yang valid.";
+            valBox.classList.remove("hidden");
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      normalizeCategory(rawCat) {
+        const clean = String(rawCat || "").trim().toLowerCase();
+        if (clean.includes("pencernaan")) return "Sistem Pencernaan";
+        if (clean.includes("pernapasan")) return "Sistem Pernapasan";
+        if (clean.includes("tata surya") || clean.includes("tatasurya")) return "Sistem Tata Surya";
+        if (clean.includes("pahlawan")) return "Jejak Pahlawan";
+        return null;
+      }
+
+      validateAndPreviewExcelRows(rows) {
+        const valBox = document.getElementById("upload-validation-box");
+        const previewSec = document.getElementById("upload-preview-section");
+        const tbody = document.getElementById("upload-preview-tbody");
+
+        this.pendingImportedQuestions = [];
+        const errors = [];
+
+        if (!rows || rows.length === 0) {
+          valBox.className = "p-4 rounded-2xl border bg-rose-50 border-rose-300 text-rose-800 text-xs font-bold";
+          valBox.textContent = "File kosong! Tidak ditemukan baris soal di dalam sheet pertama.";
+          valBox.classList.remove("hidden");
+          previewSec.classList.add("hidden");
+          return;
+        }
+
+        rows.forEach((row, index) => {
+          const rowNum = index + 2;
+          const cat = this.normalizeCategory(row["Kategori"]);
+          const question = String(row["Pertanyaan"] || "").trim();
+          const optA = String(row["Pilihan A"] || "").trim();
+          const optB = String(row["Pilihan B"] || "").trim();
+          const optC = String(row["Pilihan C"] || "").trim();
+          const optD = String(row["Pilihan D"] || "").trim();
+          const key = String(row["Kunci Jawaban"] || "").trim().toUpperCase();
+          const diffRaw = String(row["Tingkat Kesulitan"] || "Sedang").trim();
+          const difficulty = ["Mudah", "Sedang", "Sulit"].includes(diffRaw) ? diffRaw : "Sedang";
+
+          if (!cat) {
+            errors.push(`Baris ${rowNum}: Kategori "${row["Kategori"]}" tidak valid.`);
+            return;
+          }
+          if (!question || !optA || !optB || !optC || !optD) {
+            errors.push(`Baris ${rowNum}: Pertanyaan atau salah satu Pilihan A/B/C/D kosong.`);
+            return;
+          }
+          if (!["A", "B", "C", "D"].includes(key)) {
+            errors.push(`Baris ${rowNum}: Kunci Jawaban "${key}" harus A, B, C, atau D.`);
+            return;
+          }
+
+          this.pendingImportedQuestions.push({
+            id: `imp-${Date.now()}-${index}`,
+            category: cat,
+            difficulty,
+            question,
+            options: { A: optA, B: optB, C: optC, D: optD },
+            answer: key
+          });
+        });
+
+        valBox.classList.remove("hidden");
+        if (errors.length > 0) {
+          valBox.className = "p-4 rounded-2xl border bg-amber-50 border-amber-300 text-amber-900 text-xs space-y-1";
+          valBox.innerHTML = `
+            <div class="font-extrabold">⚠️ Ditemukan ${errors.length} peringatan (${this.pendingImportedQuestions.length} soal valid):</div>
+            <ul class="list-disc list-inside max-h-24 overflow-y-auto">${errors.map((e) => `<li>${e}</li>`).join("")}</ul>
+          `;
+        } else {
+          valBox.className = "p-3.5 rounded-2xl border bg-emerald-50 border-emerald-300 text-emerald-800 text-xs font-extrabold";
+          valBox.textContent = `✅ Validasi Sempurna! Seluruh ${this.pendingImportedQuestions.length} soal siap disimpan.`;
+        }
+
+        if (this.pendingImportedQuestions.length > 0) {
+          document.getElementById("upload-valid-count").textContent = this.pendingImportedQuestions.length;
+          tbody.innerHTML = "";
+          this.pendingImportedQuestions.forEach((q, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td class="p-2">${idx + 1}</td>
+              <td class="p-2 font-bold text-blue-700">${q.category}</td>
+              <td class="p-2">${q.question}</td>
+              <td class="p-2 font-extrabold text-emerald-700">${q.answer}</td>
+              <td class="p-2">${q.difficulty}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+          previewSec.classList.remove("hidden");
+        } else {
+          previewSec.classList.add("hidden");
+        }
+      }
+
+      saveGameSettings() {
+        const settings = StorageManager.getSettings();
+        settings.p1Name = document.getElementById("set-p1-name").value.trim() || "Pemain 1";
+        settings.p2Name = document.getElementById("set-p2-name").value.trim() || "Pemain 2";
+        settings.p1Color = document.getElementById("set-p1-color").value || "#ef4444";
+        settings.p2Color = document.getElementById("set-p2-color").value || "#2563eb";
+        settings.timerSeconds = Math.min(120, Math.max(10, Number(document.getElementById("set-timer-seconds").value) || 30));
+        settings.questionCount = Math.min(50, Math.max(4, Number(document.getElementById("set-question-count").value) || 20));
+        settings.trackLength = Math.min(30, Math.max(5, Number(document.getElementById("set-track-length").value) || 12));
+        settings.animSpeed = Number(document.getElementById("set-anim-speed").value) || 1.25;
+        settings.musicEnabled = document.getElementById("set-music-enabled").checked;
+        settings.sfxEnabled = document.getElementById("set-sfx-enabled").checked;
+
+        StorageManager.saveSettings(settings);
+        this.sound.syncSettings(settings);
+        this.scene3D.updateCarColors(settings.p1Color, settings.p2Color);
+        this.scene3D.configureTrackLength(settings.trackLength);
+        this.scene3D.animSpeedMultiplier = settings.animSpeed;
+
+        document.getElementById("input-p1-name").value = settings.p1Name;
+        document.getElementById("input-p2-name").value = settings.p2Name;
+        syncLandingMetadata();
+
+        showToast("Pengaturan permainan berhasil disimpan!");
+      }
+    }
+
+    /* =========================================================================
+       MODULE 8: GLOBAL INITIALIZATION & EVENT WIRING
+       ========================================================================= */
+    let scene3D = null;
+    let soundEngine = null;
+    let confettiManager = null;
+    let gameEngine = null;
+    let teacherManager = null;
+    let toastTimeout = null;
+
+    function showToast(msg) {
+      const el = document.getElementById("global-toast");
+      el.textContent = msg;
+      el.classList.remove("hidden", "animate-pop");
+      void el.offsetWidth;
+      el.classList.add("animate-pop");
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => el.classList.add("hidden"), 3200);
+    }
+
+    function syncLandingMetadata() {
+      const settings = StorageManager.getSettings();
+      document.getElementById("landing-total-questions").textContent = `${settings.questionCount} Soal`;
+      document.getElementById("landing-track-length").textContent = `${settings.trackLength} Langkah`;
+      document.getElementById("landing-p1-swatch").style.backgroundColor = settings.p1Color;
+      document.getElementById("landing-p2-swatch").style.backgroundColor = settings.p2Color;
+    }
+
+    window.onload = function () {
+      const loadingBar = document.getElementById("loading-bar");
+      const loadingPercent = document.getElementById("loading-percent");
+      const loadingScreen = document.getElementById("loading-screen");
+
+      let progress = 0;
+      const loadTimer = setInterval(() => {
+        progress += Math.floor(20 + Math.random() * 25);
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(loadTimer);
+          loadingBar.style.width = "100%";
+          loadingPercent.textContent = "100%";
+
+          setTimeout(() => {
+            loadingScreen.classList.add("opacity-0", "pointer-events-none");
+            setTimeout(() => loadingScreen.classList.add("hidden"), 450);
+          }, 240);
+        } else {
+          loadingBar.style.width = `${progress}%`;
+          loadingPercent.textContent = `${progress}%`;
+        }
+      }, 90);
+
+      const initialSettings = StorageManager.getSettings();
+      document.getElementById("input-p1-name").value = initialSettings.p1Name;
+      document.getElementById("input-p2-name").value = initialSettings.p2Name;
+
+      soundEngine = new SoundEngine();
+      soundEngine.syncSettings(initialSettings);
+
+      scene3D = new RaceScene3D("canvas-container");
+      scene3D.configureTrackLength(initialSettings.trackLength);
+      scene3D.animSpeedMultiplier = initialSettings.animSpeed;
+      scene3D.updateCarColors(initialSettings.p1Color, initialSettings.p2Color);
+      scene3D.animate();
+
+      confettiManager = new ConfettiManager("confetti-canvas");
+      gameEngine = new GameEngine(scene3D, soundEngine, confettiManager);
+      teacherManager = new TeacherManager(scene3D, soundEngine);
+
+      syncLandingMetadata();
+
+      document.getElementById("btn-start-race").addEventListener("click", () => {
+        soundEngine.init();
+        gameEngine.startNewMatch();
+      });
+
+      document.getElementById("btn-open-guide").addEventListener("click", () => {
+        document.getElementById("modal-guide").classList.remove("hidden");
+      });
+      document.getElementById("btn-close-guide").addEventListener("click", () => {
+        document.getElementById("modal-guide").classList.add("hidden");
+      });
+      document.getElementById("btn-ok-guide").addEventListener("click", () => {
+        document.getElementById("modal-guide").classList.add("hidden");
+      });
+
+      document.getElementById("btn-toggle-sound").addEventListener("click", () => {
+        soundEngine.init();
+        const isOn = soundEngine.toggleMute();
+        document.getElementById("sound-icon-on").classList.toggle("hidden", !isOn);
+        document.getElementById("sound-icon-off").classList.toggle("hidden", isOn);
+      });
+
+      document.getElementById("btn-exit-race").addEventListener("click", () => {
+        gameEngine.returnToMainMenu();
+      });
+
+      document.getElementById("btn-play-again").addEventListener("click", () => {
+        confettiManager.stop();
+        gameEngine.startNewMatch();
+      });
+
+      document.getElementById("btn-result-home").addEventListener("click", () => {
+        gameEngine.returnToMainMenu();
+      });
+
+      document.querySelectorAll(".quiz-option-pill").forEach((btn) => {
+        btn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          const pNum = Number(btn.getAttribute("data-player"));
+          const opt = btn.getAttribute("data-option");
+          gameEngine.submitAnswer(pNum, opt);
+        });
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (!gameEngine || gameEngine.state !== "RACING") return;
+        const key = e.key.toUpperCase();
+
+        if (key === "1" || key === "Q") gameEngine.submitAnswer(1, "A");
+        else if (key === "2" || key === "W") gameEngine.submitAnswer(1, "B");
+        else if (key === "3" || key === "E") gameEngine.submitAnswer(1, "C");
+        else if (key === "4" || key === "R") gameEngine.submitAnswer(1, "D");
+        else if (key === "7" || key === "U") gameEngine.submitAnswer(2, "A");
+        else if (key === "8" || key === "I") gameEngine.submitAnswer(2, "B");
+        else if (key === "9" || key === "O") gameEngine.submitAnswer(2, "C");
+        else if (key === "0" || key === "P") gameEngine.submitAnswer(2, "D");
+      });
+    };
+  </script>
+</body>
+</html>
